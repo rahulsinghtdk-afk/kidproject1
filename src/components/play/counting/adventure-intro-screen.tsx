@@ -15,9 +15,15 @@ import { PlayBackHomeButton } from "@/components/play/play-back-home-button";
 
 type AdventureIntroScreenProps = {
   onStart: () => void;
+  title?: string;
+  description?: string;
 };
 
-function AdventureIntroScreen({ onStart }: AdventureIntroScreenProps) {
+function AdventureIntroScreen({
+  onStart,
+  title = "A little adventure!",
+  description = "Touch what you find along the way.",
+}: AdventureIntroScreenProps) {
   const reducedMotion = useReducedMotion() ?? false;
 
   return (
@@ -45,10 +51,10 @@ function AdventureIntroScreen({ onStart }: AdventureIntroScreenProps) {
             className="flex w-full flex-col items-center gap-5"
           >
             <ChildHeading level={1} as="h1" className="text-balance">
-              A little adventure!
+              {title}
             </ChildHeading>
             <ChildText size="large" className="text-balance text-adventure-text-muted">
-              Touch what you find along the way.
+              {description}
             </ChildText>
             <ChildButton size="large" variant="green" onClick={onStart}>
               Let&apos;s go!

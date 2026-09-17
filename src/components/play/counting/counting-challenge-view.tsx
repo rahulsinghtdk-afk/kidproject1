@@ -9,12 +9,24 @@ import {
 } from "@/lib/motion/adventure-motion";
 import { getObjectLayout } from "@/lib/counting/object-layouts";
 import { shuffledAnswerChoices } from "@/lib/counting/shuffle-choices";
+import type { CountAndChooseChallenge } from "@/data/counting/count-and-choose/challenges";
 import {
   COUNTING_OBJECT_EMOJI,
   touchEachPrompt,
-  type CountingPrototypeChallenge,
-} from "@/data/counting-prototype-challenges";
+} from "@/data/counting/object-kinds";
+import {
+  CLAP_CELEBRATION_MS,
+  CLAP_CELEBRATION_MS_REDUCED,
+  playCelebrationSound,
+} from "@/lib/audio/play-clap-sound";
+import {
+  CELEBRATION_BEAT_TIMES,
+  CELEBRATION_DURATION_SEC,
+  CELEBRATION_EASE,
+  MASCOT_PATH,
+} from "@/lib/motion/celebration-motion";
 import { cn } from "@/lib/utils";
+import { CelebrationBubbles } from "./celebration-bubbles";
 import { CountableObject } from "./countable-object";
 import { CountingPlaymat } from "./counting-playmat";
 import { PlayCompanionCharacter } from "./play-companion-character";
@@ -22,7 +34,7 @@ import { PlayProgressIndicator } from "./play-progress-indicator";
 import { TouchCountCounter } from "./touch-count-counter";
 
 type CountingChallengeViewProps = {
-  challenge: CountingPrototypeChallenge;
+  challenge: CountAndChooseChallenge;
   challengeIndex: number;
   totalChallenges: number;
   onComplete: () => void;
@@ -82,9 +94,10 @@ function CountingChallengeView({
 
       if (choice === challenge.count) {
         setCelebrating(true);
+        playCelebrationSound();
         window.setTimeout(() => {
           onComplete();
-        }, reducedMotion ? 450 : 1000);
+        }, reducedMotion ? CLAP_CELEBRATION_MS_REDUCED : CLAP_CELEBRATION_MS);
         return;
       }
 
@@ -109,26 +122,27 @@ function CountingChallengeView({
         className="opacity-80"
       />
 
-      <div className="flex flex-1 flex-col gap-4 landscape:flex-row landscape:items-stretch landscape:gap-5">
+      <div className="relative flex min-h-0 flex-1 flex-col gap-4 landscape:flex-row landscape:items-stretch landscape:gap-5">
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-center sm:gap-8">
             <motion.div
               key={allCounted ? "how-many" : "touch-each"}
               initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{ opacity: celebrating ? 0 : 1, y: 0 }}
               transition={adventureTransition.normal}
+              className={celebrating ? "pointer-events-none sr-only" : undefined}
             >
               <ChildHeading level={2} as="h2" className="text-balance">
-                {allCounted && !celebrating
-                  ? "How many?"
-                  : touchEachPrompt(challenge.objectKind)}
+                {allCounted ? "How many?" : touchEachPrompt(challenge.objectKind)}
               </ChildHeading>
             </motion.div>
 
-            <TouchCountCounter
-              count={touchCount}
-              emphasize={counterEmphasis || celebrating}
-            />
+            {!celebrating ? (
+              <TouchCountCounter
+                count={touchCount}
+                emphasize={counterEmphasis}
+              />
+            ) : null}
           </div>
 
           <motion.div
@@ -191,9 +205,47 @@ function CountingChallengeView({
           ) : null}
         </div>
 
-        <div className="flex justify-center landscape:w-[8.5rem] landscape:items-end landscape:pb-4">
-          <PlayCompanionCharacter mood={companionMood} />
-        </div>
+        {!celebrating ? (
+          <div className="flex justify-center landscape:w-[8.5rem] landscape:items-end landscape:pb-4">
+            <PlayCompanionCharacter mood={companionMood} />
+          </div>
+        ) : null}
+
+        {celebrating ? (
+          <motion.div
+            className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
+            aria-hidden
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+          >
+            <CelebrationBubbles className="z-0" />
+
+            <motion.div
+              className="absolute z-10"
+              initial={{ left: "72%", top: "60%" }}
+              animate={
+                reducedMotion
+                  ? { left: "46%", top: "40%" }
+                  : {
+                      left: [...MASCOT_PATH.left],
+                      top: [...MASCOT_PATH.top],
+                      rotate: [...MASCOT_PATH.rotate],
+                    }
+              }
+              transition={{
+                duration: CELEBRATION_DURATION_SEC,
+                ease: CELEBRATION_EASE,
+                times: reducedMotion
+                  ? undefined
+                  : [...CELEBRATION_BEAT_TIMES],
+              }}
+              style={{ x: "-50%", y: "-50%" }}
+            >
+              <PlayCompanionCharacter mood="celebrate" clapping />
+            </motion.div>
+          </motion.div>
+        ) : null}
       </div>
     </motion.div>
   );

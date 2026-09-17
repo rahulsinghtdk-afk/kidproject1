@@ -3,6 +3,7 @@
 import { HomeAdventureBackdrop } from "@/components/home/home-adventure-backdrop";
 import { HomeCharacter } from "@/components/home/home-character";
 import {
+  ChildButton,
   ChildCard,
   ChildHeading,
   ChildLinkButton,
@@ -15,7 +16,11 @@ import {
 } from "@/lib/motion/adventure-motion";
 import { PlayBackHomeButton } from "@/components/play/play-back-home-button";
 
-function AdventureCompleteScreen() {
+type AdventureCompleteScreenProps = {
+  onPlayAgain?: () => void;
+};
+
+function AdventureCompleteScreen({ onPlayAgain }: AdventureCompleteScreenProps) {
   const reducedMotion = useReducedMotion() ?? false;
 
   return (
@@ -56,9 +61,21 @@ function AdventureCompleteScreen() {
               </ChildHeading>
             </motion.div>
 
-            <ChildLinkButton href="/" variant="primary" size="large">
-              Back Home
-            </ChildLinkButton>
+            <div className="flex w-full flex-col gap-4">
+              {onPlayAgain ? (
+                <ChildButton
+                  variant="orange"
+                  size="large"
+                  className="w-full"
+                  onClick={onPlayAgain}
+                >
+                  More counting
+                </ChildButton>
+              ) : null}
+              <ChildLinkButton href="/" variant="primary" size="large">
+                Back Home
+              </ChildLinkButton>
+            </div>
           </ChildCard>
         </motion.div>
 

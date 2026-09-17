@@ -24,6 +24,20 @@
   --adventure-surface: #ffffff;
   --adventure-surface-elevated: #fffdf8;
 
+  /* Celebration bubbles — saturated so they read on warm background */
+  --adventure-celebration-bubble-yellow: #ffc107;
+  --adventure-celebration-bubble-yellow-edge: #e6a800;
+  --adventure-celebration-bubble-sky: #42bff5;
+  --adventure-celebration-bubble-sky-edge: #1a9fd4;
+  --adventure-celebration-bubble-orange: #ff8c2e;
+  --adventure-celebration-bubble-orange-edge: #e06a12;
+  --adventure-celebration-bubble-green: #5ecf7a;
+  --adventure-celebration-bubble-green-edge: #3aad58;
+  --adventure-celebration-bubble-pink: #ff7eb9;
+  --adventure-celebration-bubble-pink-edge: #e05596;
+  --adventure-celebration-bubble-violet: #a98cff;
+  --adventure-celebration-bubble-violet-edge: #8560e8;
+
   /* Borders & focus */
   --adventure-border: #e8dfd3;
   --adventure-border-strong: #d4c9bb;

@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import type { CountingObjectKind } from "@/data/counting-prototype-challenges";
+import type { CountingObjectKind } from "@/data/counting/object-kinds";
 
 const playmatTint: Record<
   CountingObjectKind,
@@ -21,6 +21,11 @@ const playmatTint: Record<
     sky: "from-adventure-secondary/30 via-adventure-surface-elevated/90 to-adventure-primary/25",
     hill: "bg-adventure-secondary/32",
     speck: "bg-adventure-secondary/55",
+  },
+  ball: {
+    sky: "from-adventure-green/28 via-adventure-surface-elevated/90 to-adventure-primary/22",
+    hill: "bg-adventure-green/30",
+    speck: "bg-adventure-green/50",
   },
 };
 
