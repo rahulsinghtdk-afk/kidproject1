@@ -1,8 +1,7 @@
 ---
 description: Touch sizing, feedback patterns, and anti-patterns for child-facing UI code
-globs: *.tsx,*.jsx,*.vue,*.css,*.scss,*.module.css
+alwaysApply: false
 ---
-
 # Child-facing UI implementation
 
 Applies when editing presentation layers for the **child play experience** (not parent/admin tools unless noted).

@@ -1,8 +1,6 @@
 ---
 alwaysApply: true
-description: Modular app structure — pages thin, challenge types reusable, learning content data-driven
 ---
-
 # Architecture
 
 Build the application as a **modular, reusable system**. Pair with [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc) for play UX and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) for child-facing UI implementation.
