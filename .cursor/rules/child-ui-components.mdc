@@ -1,0 +1,32 @@
+---
+description: Touch sizing, feedback patterns, and anti-patterns for child-facing UI code
+globs: *.tsx,*.jsx,*.vue,*.css,*.scss,*.module.css
+---
+
+# Child-facing UI implementation
+
+Applies when editing presentation layers for the **child play experience** (not parent/admin tools unless noted).
+
+## Touch and layout
+
+- Minimum **60px** effective touch target for tappable controls (button, draggable, choice tile). Use padding and `min-width` / `min-height` or expanded hit slop — not just visible graphic size.
+- Spacing between tappable items: enough gap that mis-taps are rare (generous margins on tablet).
+- Avoid `:hover`-only affordances; every action must work with tap alone.
+- Prefer full-screen or large regions over dense control bars.
+
+## Feedback
+
+- **Correct / complete**: brief celebratory motion (scale, sparkle, bounce), optional positive sound; avoid long modal text.
+- **Incorrect / incomplete**: soft wiggle, gentle dim, or “nudge” animation; invite retry without copy when possible. No red flash, shake punishment, or error toasts with sentences.
+- Animations: short duration, ease-out; no rapid strobing or many simultaneous effects.
+
+## Content
+
+- Do not add scores, countdown timers, lives, or “level failed” states in child UI unless product explicitly asks for a separate competitive mode (default: off).
+- Prefer pictorial choices over numbered lists or paragraphs.
+- Loading: friendly idle animation or character; avoid “Loading…” paragraphs.
+
+## Accessibility without breaking “game feel”
+
+- Support reduced motion when available; keep essential feedback visible without relying on motion alone.
+- If text exists for screen readers, keep on-screen visuals primary for sighted children.

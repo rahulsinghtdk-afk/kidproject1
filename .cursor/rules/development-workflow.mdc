@@ -1,0 +1,30 @@
+---
+alwaysApply: true
+---
+# Development workflow
+
+How to approach changes in this codebase. Pair with [architecture.mdc](mdc:.cursor/rules/architecture.mdc) for structure and boundaries, and [technology.mdc](mdc:.cursor/rules/technology.mdc) for stack and dependency choices.
+
+## Before modifying the codebase
+
+1. **Inspect** the existing project structure.
+2. **Understand** existing components and patterns.
+3. **Reuse** existing code where appropriate.
+4. **Avoid** unnecessary rewrites.
+
+Work **incrementally**.
+
+- Do **not** implement features that were not requested.
+- Do **not** expand the scope of a task without explicit instruction.
+
+## After making changes
+
+1. Run the relevant **lint**, **typecheck**, and **build** commands.
+2. **Fix** errors introduced by the changes.
+3. **Verify** that existing functionality still works.
+4. **Summarize** what changed.
+
+## Guardrails
+
+- Do **not** silently change architectural decisions or introduce new major dependencies.
+- If a requirement is ambiguous, prefer the **simplest** implementation consistent with the product specification.

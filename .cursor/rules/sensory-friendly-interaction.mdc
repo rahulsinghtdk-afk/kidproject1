@@ -1,0 +1,47 @@
+---
+alwaysApply: true
+description: Sensory-sensitive motion, audio, and feedback — calm, predictable, optional sound, no colour-only meaning
+---
+
+# Sensory-friendly interaction
+
+Design for **sensory sensitivity** alongside play-first UX. Pair with [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc), [visual-design.mdc](mdc:.cursor/rules/visual-design.mdc), and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) when implementing child-facing UI.
+
+## Avoid
+
+- Flashing elements or strobing (including rapid opacity or colour toggles)
+- Rapid animation or high-frequency motion
+- Sudden large movements (elements jumping across the screen without clear cause)
+- Unexpected audio (sounds that play without a clear, repeatable user action)
+- Loud error sounds or harsh alert tones
+- Excessive confetti, particle bursts, or stacked celebration effects
+- Constant background motion (parallax loops, always-on wiggling decorations, busy ambient animation)
+
+## Animations should be
+
+- **Short** — brief enough that the child can return to the task quickly
+- **Predictable** — motion follows obvious cause and effect (tap → gentle response)
+- **Purposeful** — every animation communicates state or feedback; no decoration-only motion in the play loop
+- **Easy to understand** — one focal motion at a time; avoid many simultaneous effects
+
+Success animations should feel **rewarding without being overwhelming** — a small bounce, glow, or sparkle is enough; scale duration and intensity down before adding more effects.
+
+## Audio
+
+- Audio must always be **optional and controllable** (mute / volume in a **parent/guardian** area, not cluttering the child play path).
+- Default to **soft** levels; no autoplay on screen entry unless the product explicitly allows it and parents can disable it.
+- Pair sound with **visual** feedback so meaning is clear when sound is off.
+
+## Meaning beyond colour
+
+Do **not** rely on colour alone to communicate meaning (correct vs incorrect, selected vs unselected, enabled vs disabled).
+
+- Combine colour with **shape, icon, position, border, or motion** so state is obvious without reading.
+- Respect contrast enough for common colour-vision differences; use tokens, not one-off “red = bad”-only patterns in child UI.
+
+## Consistent interaction patterns
+
+Prefer **the same gestures and feedback** across activities (tap to choose, drag to match, same success “feel”) so the child learns how the interface behaves.
+
+- No surprise controls or one-off interaction models per mini-game unless the activity truly requires it — and then teach it visually once, consistently.
+- Honor **`prefers-reduced-motion`**: keep essential state visible (icons, highlights) when motion is reduced; see [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc).

@@ -1,0 +1,37 @@
+---
+alwaysApply: true
+description: Modular app structure — pages thin, challenge types reusable, learning content data-driven
+---
+
+# Architecture
+
+Build the application as a **modular, reusable system**. Pair with [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc) for play UX and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) for child-facing UI implementation.
+
+## Page and component boundaries
+
+- Do **not** place large amounts of application logic inside page components. Pages orchestrate layout, routing, and wiring — not domain rules or activity mechanics.
+- Prefer **small reusable components** with a single clear responsibility.
+- Keep a **clear separation between UI and business logic** (hooks, services, pure functions, or modules — follow whatever pattern the repo already uses).
+- Use **typed data structures** for content, session state, and challenge payloads so activities stay predictable and safe to extend.
+
+## Data-driven learning content
+
+- **Do not hardcode** individual learning content directly into components. Words, numbers, days, and future learning material belong in **data or configuration** (JSON, CMS-shaped types, seed files, etc.), not scattered through the UI.
+- UI should **render from props or loaded config**, not embed lesson-specific literals except for dev fixtures isolated from production paths.
+
+## Challenge types and session engine
+
+- Learning activities must be implemented as **reusable challenge types** (one implementation per interaction pattern, many content instances).
+- Design so **new challenge types can be added without rewriting the session engine**. The engine advances sessions, selects challenges, and delegates rendering/scoring to typed challenge handlers or registries.
+- **Reusable interaction patterns** (tap-to-choose, drag-to-match, etc.) should be shared across activities; see [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc) for consistent feedback.
+
+## Abstraction discipline
+
+- **Avoid premature abstraction.** Introduce shared modules, base components, or generic engines only when reuse is **clear** (second real use case, or a stable contract the product already depends on).
+- When abstracting, prefer **narrow interfaces** (challenge type + content schema) over large “god” frameworks.
+
+## Practical checklist
+
+- New activity: add **content/config** + **challenge type** (or reuse existing type); page stays thin.
+- New interaction pattern: new challenge type + register with session engine; do not fork one-off page logic.
+- Business rules (correctness, progression, scoring if any) live **outside** presentational components.

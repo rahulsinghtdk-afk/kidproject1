@@ -1,0 +1,34 @@
+---
+alwaysApply: true
+description: Preferred stack (Next.js, TypeScript, Tailwind, shadcn/ui, Motion, Lucide), dependency discipline, and TypeScript/component conventions
+---
+
+# Technology
+
+Default to the project’s **preferred stack** unless a requirement clearly needs something else:
+
+- **Next.js** — routing, rendering, and app structure
+- **TypeScript** — all application code
+- **Tailwind CSS** — styling and layout
+- **shadcn/ui** — UI primitives (see [visual-design.mdc](mdc:.cursor/rules/visual-design.mdc) for child vs parent usage)
+- **Motion** — animations (respect [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc))
+- **Lucide** — icons
+
+## Dependencies
+
+- **Use existing project dependencies** when they already solve the problem.
+- **Do not add a new library** unless:
+  1. The existing stack cannot reasonably solve the requirement, or
+  2. The new library provides substantial value for that specific feature.
+- Prefer **browser-native APIs** when they are simple and reliable.
+- Do **not** add dependencies merely for convenience.
+
+## TypeScript
+
+- Use TypeScript **strictly**.
+- Avoid `any` unless there is a clear technical reason (document why in a brief comment when used).
+
+## Components
+
+- Keep components **focused and readable** — one clear responsibility per component.
+- Align with [architecture.mdc](mdc:.cursor/rules/architecture.mdc): thin pages, logic outside presentational UI where the repo already separates concerns.

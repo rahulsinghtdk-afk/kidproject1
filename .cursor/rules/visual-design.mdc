@@ -1,0 +1,60 @@
+---
+alwaysApply: true
+description: Soft Adventure visual identity — colours, typography, shape language, tokens, and shadcn boundaries for child vs parent UI
+---
+
+# Visual design — Soft Adventure
+
+The visual identity is **Soft Adventure**. Pair this with [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc) (play UX) and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) (touch, feedback, implementation).
+
+## Child-facing UI should feel
+
+- Playful
+- Warm
+- Friendly
+- Calm
+- Colourful
+- Tactile
+
+## Avoid
+
+- Corporate SaaS aesthetics
+- Dense dashboards
+- Excessive gradients
+- Excessive shadows
+- Neon colours
+- Excessive animation
+- Sharp rectangular UI (hard 0-radius boxes, rigid grid chrome)
+- Tiny controls
+- Visually noisy screens
+
+## Use
+
+- Rounded shapes (buttons, cards, panels, inputs)
+- Generous whitespace
+- Large typography
+- Simple illustrations
+- Soft colours
+- Clear visual hierarchy (one focal element per screen when possible)
+
+## Typography
+
+- Child-facing content: use a **friendly rounded typeface** such as **Fredoka** (or the project’s designated child font token).
+- Keep on-screen type minimal; size for tablet reading distance, not desktop density.
+
+## Colour and tokens
+
+- Use the project’s **centralized design tokens** for colours (CSS variables, theme config, or shared token module — wherever the repo defines them).
+- Do **not** hardcode one-off hex/rgb/hsl values inside child-facing components; extend tokens when a new colour is needed.
+- Prefer soft, warm hues; reserve strong saturation for small accents and success moments, not full-screen backgrounds.
+
+## Component strategy (child vs parent)
+
+- **Child-facing UI must not look like a default shadcn/ui application** (neutral greys, tight radius, small text, dense layouts).
+- **shadcn/ui** is acceptable for **parent/guardian/admin** surfaces and for **functional primitives** behind the scenes.
+- **Child-facing components** should be **custom-designed** for Soft Adventure: rounded, tactile, illustration-friendly, token-driven.
+
+## Motion and depth (visual)
+
+- Depth: light, soft elevation — not stacked drop shadows or glassmorphism stacks.
+- Motion: supports the calm, playful feel; see child-experience for intensity limits (gentle, not flashy).

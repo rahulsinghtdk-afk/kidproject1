@@ -1,0 +1,55 @@
+---
+alwaysApply: true
+description: Tablet-first learning game UX for a 6-year-old — play-first, touch-first, gentle feedback
+---
+
+# Child experience (6-year-old, tablet-first)
+
+This project is a **tablet-first learning game** for a **6-year-old**. The child should feel like they are **playing a game**, not using school software or an “educational app.”
+
+## Priorities (in order of importance)
+
+1. **Simplicity** — one clear goal per screen; minimal steps to complete an action.
+2. **Large touch targets** — design for fingers, not mouse cursors. Important interactive elements should generally be **at least 60px** in effective touch size (including padding/hit area).
+3. **Visual communication over text** — icons, motion, color, and layout carry meaning; avoid reading-heavy UI.
+4. **Short interactions** — small wins often; avoid long flows or waiting.
+5. **Predictable interactions** — same gestures and patterns repeat; no surprise menus or hidden controls.
+6. **Gentle animations** — subtle, reassuring motion; nothing flashy or overstimulating.
+7. **Positive reinforcement** — celebrate attempts and success; never punish or shame.
+8. **Low sensory overload** — calm palette, limited simultaneous motion/sound, uncluttered layouts.
+
+## Never add to the child-facing UI
+
+Do **not** introduce unless explicitly requested for a **parent/guardian** area (separate from play):
+
+- Unnecessary text, labels, or instructions
+- Settings, scores, timers, leaderboards
+- Complex navigation (tabs, deep menus, breadcrumbs)
+- Desktop patterns: hover-only controls, tiny click targets, keyboard-first flows
+
+Optimize for **touch first**, not desktop conventions.
+
+## Incorrect answers and mistakes
+
+When an interaction is wrong or incomplete:
+
+- Give **gentle feedback** (soft animation, friendly sound, subtle highlight) and let the child **try again** immediately.
+- Prefer **visual feedback, animation, and sound** over explanatory text.
+
+**Never** use negative feedback such as:
+
+- “Wrong”, “Failed”, “Game Over”, “Try harder”
+- Losing lives or punitive mechanics
+- Red error screens or alarming visuals/sounds
+
+## Implementation checklist (when building UI)
+
+- Primary actions: big, obvious, reachable on tablet (thumb-friendly zones where possible).
+- Secondary actions: still touch-sized; avoid icon-only controls smaller than 60px effective area.
+- Copy: short, optional, and child-appropriate; default to no copy when visuals suffice.
+- Feedback loops: success feels rewarding; mistakes feel safe and retryable.
+- Motion and audio: optional or soft; respect reduced motion where the platform allows.
+
+## Parent vs child surfaces
+
+If the product needs configuration (progress, accounts, difficulty), keep it **outside** the main play loop — clearly separated so the child path stays game-like and text-light.
