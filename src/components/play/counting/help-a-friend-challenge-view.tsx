@@ -13,25 +13,24 @@ import {
   objectLabelPlural,
 } from "@/data/counting/object-kinds";
 import { getPoolObjectLayout } from "@/lib/counting/pool-object-layouts";
-import {
-  CLAP_CELEBRATION_MS,
-  CLAP_CELEBRATION_MS_REDUCED,
-} from "@/lib/audio/celebration-timing";
 import { helpAFriendRequestInstruction } from "@/lib/audio";
 import { useAudio } from "@/hooks/use-audio";
+import { useChallengeCelebrationProgression } from "@/hooks/use-challenge-celebration-progression";
 import { useChallengeInstruction } from "@/hooks/use-challenge-instruction";
+import { ChallengeGoodJobMessage } from "@/components/play/challenge-good-job-message";
+import { ChallengeNextGuidance } from "@/components/play/challenge-next-guidance";
 import {
-  CELEBRATION_BEAT_TIMES,
-  CELEBRATION_DURATION_SEC,
-  CELEBRATION_EASE,
-  MASCOT_PATH,
+  MASCOT_CELEBRATION_ANCHOR,
 } from "@/lib/motion/celebration-motion";
+import { CelebrationBalloons } from "@/components/play/celebration-balloons";
+import { CelebrationEffectsFrame } from "@/components/play/celebration-effects-frame";
+import { CelebrationSparkles } from "@/components/play/celebration-sparkles";
 import { CelebrationBubbles } from "./celebration-bubbles";
+import { PlayCompanionCharacter } from "./play-companion-character";
 import { CharacterGiftZone } from "./character-gift-zone";
 import { CountingPlaymat } from "./counting-playmat";
 import { DraggableGiftObject } from "./draggable-gift-object";
 import { GiftQuantityCounter } from "./gift-quantity-counter";
-import { PlayCompanionCharacter } from "./play-companion-character";
 import { PlayProgressIndicator } from "./play-progress-indicator";
 import { PressToConfirmPad } from "./press-to-confirm-pad";
 import { HearAgainButton } from "./hear-again-button";
@@ -40,6 +39,7 @@ type HelpAFriendChallengeViewProps = {
   challenge: HelpAFriendChallenge;
   challengeIndex: number;
   totalChallenges: number;
+  isLastChallenge?: boolean;
   onComplete: () => void;
 };
 
@@ -47,6 +47,7 @@ function HelpAFriendChallengeView({
   challenge,
   challengeIndex,
   totalChallenges,
+  isLastChallenge = false,
   onComplete,
 }: HelpAFriendChallengeViewProps) {
   const reducedMotion = useReducedMotion() ?? false;
@@ -69,13 +70,26 @@ function HelpAFriendChallengeView({
   )}!`;
 
   const [givenIds, setGivenIds] = useState<number[]>([]);
-  const [celebrating, setCelebrating] = useState(false);
   const [counterEmphasis, setCounterEmphasis] = useState(false);
   const [gentleFull, setGentleFull] = useState(false);
   const [pressNudge, setPressNudge] = useState(false);
 
   const givenCount = givenIds.length;
   const quotaMet = givenCount >= challenge.requested;
+
+  const {
+    celebrating,
+    showCelebrationScene,
+    showNextGuidance,
+    challengeInstructionsActive,
+    playLocked,
+    beginSuccessCelebration,
+    handleNext,
+  } = useChallengeCelebrationProgression({
+    isLastChallenge,
+    reducedMotion,
+    onAdvance: onComplete,
+  });
 
   const companionMood = celebrating
     ? "celebrate"
@@ -99,7 +113,7 @@ function HelpAFriendChallengeView({
   const { registerInteraction, hearAgain } = useChallengeInstruction(
     requestInstruction,
     {
-      active: !celebrating && requestInstruction !== null,
+      active: challengeInstructionsActive && requestInstruction !== null,
       onHearAgain: bumpInstructionVisual,
     }
   );
@@ -109,16 +123,11 @@ function HelpAFriendChallengeView({
   }, [challenge.id]);
 
   const finishChallenge = useCallback(() => {
-    setCelebrating(true);
-    audio.playSuccess();
-    audio.playGoodJob();
-    window.setTimeout(() => {
-      onComplete();
-    }, reducedMotion ? CLAP_CELEBRATION_MS_REDUCED : CLAP_CELEBRATION_MS);
-  }, [audio, onComplete, reducedMotion]);
+    beginSuccessCelebration();
+  }, [beginSuccessCelebration]);
 
   const handlePressConfirm = useCallback(() => {
-    if (celebrating) return;
+    if (playLocked) return;
 
     registerInteraction();
 
@@ -130,7 +139,7 @@ function HelpAFriendChallengeView({
     setPressNudge(true);
     window.setTimeout(() => setPressNudge(false), 500);
   }, [
-    celebrating,
+    playLocked,
     challenge.requested,
     finishChallenge,
     givenCount,
@@ -139,7 +148,7 @@ function HelpAFriendChallengeView({
 
   const handleDeliver = useCallback(
     (index: number): boolean => {
-      if (celebrating) return false;
+      if (playLocked) return false;
 
       if (givenIds.includes(index) || givenCount >= challenge.requested) {
         return false;
@@ -161,7 +170,7 @@ function HelpAFriendChallengeView({
     },
     [
       audio,
-      celebrating,
+      playLocked,
       challenge.requested,
       givenCount,
       givenIds,
@@ -197,7 +206,7 @@ function HelpAFriendChallengeView({
       />
 
       <div className="relative flex min-h-0 flex-1 flex-col gap-4 landscape:flex-row landscape:items-start landscape:gap-5">
-        {!celebrating ? (
+        {!playLocked ? (
           <div
             className="flex w-full flex-col items-center gap-3 landscape:sticky landscape:top-4 landscape:w-[min(100%,13rem)] landscape:shrink-0"
           >
@@ -218,7 +227,7 @@ function HelpAFriendChallengeView({
         ) : null}
 
         <div className="flex flex-1 flex-col gap-4">
-          {!celebrating ? (
+          {!playLocked ? (
             <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
               <GiftQuantityCounter
                 given={givenCount}
@@ -226,7 +235,7 @@ function HelpAFriendChallengeView({
                 emphasize={counterEmphasis}
               />
               <PressToConfirmPad
-                disabled={celebrating}
+                disabled={playLocked}
                 nudge={pressNudge}
                 onPress={handlePressConfirm}
               />
@@ -235,9 +244,11 @@ function HelpAFriendChallengeView({
 
           <motion.div
             className="relative w-full flex-1"
-            variants={celebrating ? adventureMotionVariants.successPop : undefined}
+            variants={
+              showCelebrationScene ? adventureMotionVariants.successPop : undefined
+            }
             initial="initial"
-            animate={celebrating ? "animate" : undefined}
+            animate={showCelebrationScene ? "animate" : undefined}
           >
             <CountingPlaymat objectKind={challenge.objectKind}>
               {Array.from({ length: challenge.available }, (_, index) => (
@@ -246,7 +257,7 @@ function HelpAFriendChallengeView({
                   emoji={emoji}
                   index={index}
                   layout={layouts[index]}
-                  disabled={celebrating || givenIds.includes(index)}
+                  disabled={playLocked || givenIds.includes(index)}
                   dropTargetRef={dropTargetRef}
                   onDeliver={handleDeliver}
                   onRejectDelivery={handleRejectDelivery}
@@ -256,40 +267,29 @@ function HelpAFriendChallengeView({
           </motion.div>
         </div>
 
-        {celebrating ? (
-          <motion.div
-            className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
-            aria-hidden
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-          >
-            <CelebrationBubbles className="z-0" />
+        {showCelebrationScene ? (
+          <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden">
+            <CelebrationEffectsFrame>
+              <CelebrationBalloons className="z-[1]" />
+              <CelebrationBubbles className="z-[2]" />
+              <CelebrationSparkles />
+              <ChallengeGoodJobMessage visible partOfCelebrationScene />
+            </CelebrationEffectsFrame>
 
-            <motion.div
-              className="absolute z-10"
-              initial={{ left: "50%", top: "35%" }}
-              animate={
-                reducedMotion
-                  ? { left: "50%", top: "38%" }
-                  : {
-                      left: [...MASCOT_PATH.left],
-                      top: [...MASCOT_PATH.top],
-                      rotate: [...MASCOT_PATH.rotate],
-                    }
-              }
-              transition={{
-                duration: CELEBRATION_DURATION_SEC,
-                ease: CELEBRATION_EASE,
-                times: reducedMotion
-                  ? undefined
-                  : [...CELEBRATION_BEAT_TIMES],
+            <div
+              className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+              style={{
+                left: MASCOT_CELEBRATION_ANCHOR.left,
+                top: MASCOT_CELEBRATION_ANCHOR.top,
               }}
-              style={{ x: "-50%", y: "-50%" }}
             >
-              <PlayCompanionCharacter mood="celebrate" clapping />
-            </motion.div>
-          </motion.div>
+              <PlayCompanionCharacter mood="celebrate" clapping={celebrating} />
+            </div>
+          </div>
+        ) : null}
+
+        {showNextGuidance ? (
+          <ChallengeNextGuidance onNext={handleNext} />
         ) : null}
       </div>
     </motion.div>

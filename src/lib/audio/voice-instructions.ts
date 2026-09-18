@@ -47,3 +47,8 @@ export function countAndChooseTouchPhaseInstruction(
 ): InstructionAudioRef {
   return countTouchEachInstruction(challenge.objectKind);
 }
+
+/** Spoken when the Next control is shown after a normal challenge celebration. */
+export function clickHereToProceedInstruction(): InstructionAudioRef {
+  return { src: AUDIO_ASSET_PATHS.voice.clickHereToProceed };
+}

@@ -17,7 +17,7 @@ type CompanionMood =
 
 type PlayCompanionCharacterProps = {
   mood: CompanionMood;
-  /** True after a correct answer — mascot claps, then hooray. */
+  /** True after a correct answer — mascot claps in celebration. */
   clapping?: boolean;
   className?: string;
 };
@@ -68,39 +68,6 @@ function PlayCompanionCharacter({
 
   return (
     <div className={cn("relative flex shrink-0 justify-center", className)}>
-      {clapping ? (
-        <motion.div
-          className={cn(
-            "pointer-events-none absolute -top-1 z-20 left-1/2 -translate-x-1/2",
-            "rounded-[var(--adventure-radius-xl)] border-2 border-adventure-border-strong",
-            "bg-adventure-surface px-4 py-2 shadow-[var(--adventure-shadow-md)]",
-            "font-[family-name:var(--font-adventure)] text-[length:var(--adventure-text-lg)] font-semibold text-adventure-orange"
-          )}
-          initial={{ opacity: 0, scale: 0.5, y: 8 }}
-          animate={
-            isClapping
-              ? {
-                  opacity: [0, 1, 1, 1, 1],
-                  scale: [0.6, 1.1, 1, 1.05, 1],
-                  y: [6, -2, -4, -6, -8],
-                }
-              : { opacity: 1, scale: 1, y: -6 }
-          }
-          transition={
-            isClapping
-              ? { duration: CLAP_DURATION, times: [0, 0.12, 0.35, 0.55, 1] }
-              : { duration: 0.25 }
-          }
-          aria-hidden
-        >
-          Hoorah!
-          <span
-            className="absolute -bottom-2 left-1/2 size-0 -translate-x-1/2 border-x-[8px] border-t-[10px] border-x-transparent border-t-adventure-surface"
-            aria-hidden
-          />
-        </motion.div>
-      ) : null}
-
       <motion.div
         className="relative flex justify-center"
         aria-hidden

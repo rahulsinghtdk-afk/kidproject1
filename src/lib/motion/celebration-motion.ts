@@ -7,6 +7,12 @@ export const CELEBRATION_EASE = [0.42, 0, 0.2, 1] as const;
 
 export const CELEBRATION_DURATION_SEC = CLAP_CELEBRATION_MS / 1000;
 
+/** Primary celebration pose — visible immediately with the rest of the scene. */
+export const MASCOT_CELEBRATION_ANCHOR = {
+  left: "46%",
+  top: "40%",
+} as const;
+
 export const MASCOT_PATH = {
   left: ["72%", "72%", "46%", "46%", "28%", "28%", "46%", "46%"] as const,
   top: ["60%", "60%", "40%", "40%", "52%", "52%", "38%", "38%"] as const,

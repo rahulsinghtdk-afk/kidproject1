@@ -85,7 +85,9 @@ Use the app’s existing persistence pattern — not component-only state. Consi
 
 ## Celebration audio
 
-**Challenge complete:** complete action → special completion sound → “Good Job!” → small celebration → short pause → auto-advance (child can tap Next immediately).
+Child progression after a normal challenge is defined in [little-adventure-celebration-progression.mdc](mdc:.cursor/rules/little-adventure-celebration-progression.mdc) (source of truth). Audio must support that flow; do not auto-advance when celebration or voice finishes.
+
+**Challenge complete:** complete action → special completion sound → “Good Job!” → small celebration → celebration finishes → wait for child → show Next + visual pointer → “Click here to proceed.” → child taps Next → transition sound → next challenge.
 
 **Final complete:** complete action → special sound → “Good Job, [Name]!” → slightly longer celebration → final completion screen.
 

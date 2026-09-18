@@ -59,6 +59,9 @@ function HelpAFriendAdventure({ onExitToPicker }: HelpAFriendAdventureProps) {
           challenge={challenge}
           challengeIndex={challengeIndex}
           totalChallenges={HELP_A_FRIEND_CHALLENGES.length}
+          isLastChallenge={
+            challengeIndex >= HELP_A_FRIEND_CHALLENGES.length - 1
+          }
           onComplete={handleChallengeComplete}
         />
       </div>

@@ -13,6 +13,7 @@ export type {
 } from "./assets";
 export { DEFAULT_AUDIO_CONFIG, getDuckingMultiplier } from "./config";
 export {
+  clickHereToProceedInstruction,
   countAndChooseTouchPhaseInstruction,
   countHowManyInstruction,
   countTouchEachInstruction,

@@ -38,6 +38,22 @@
   --adventure-celebration-bubble-violet: #a98cff;
   --adventure-celebration-bubble-violet-edge: #8560e8;
 
+  /* Celebration banner */
+  --adventure-celebration-gold-light: #ffe9a3;
+  --adventure-celebration-gold: #ffd95a;
+  --adventure-celebration-gold-deep: #f0b840;
+  --adventure-celebration-gold-border: color-mix(
+    in srgb,
+    var(--adventure-orange) 55%,
+    var(--adventure-text)
+  );
+  --adventure-celebration-gold-shadow: color-mix(
+    in srgb,
+    var(--adventure-celebration-gold-deep) 75%,
+    var(--adventure-text)
+  );
+  --adventure-celebration-gold-sparkle: #fff8dc;
+
   /* Borders & focus */
   --adventure-border: #e8dfd3;
   --adventure-border-strong: #d4c9bb;

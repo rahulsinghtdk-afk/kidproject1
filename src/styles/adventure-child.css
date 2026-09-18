@@ -4,6 +4,15 @@
  */
 
 @layer components {
+  .challenge-next-arrow {
+    --adventure-next-arrow-light: var(--adventure-celebration-gold-light);
+    --adventure-next-arrow-mid: var(--adventure-celebration-gold);
+    --adventure-next-arrow-deep: var(--adventure-celebration-gold-deep);
+    --adventure-next-arrow-border: #b8862a;
+    --adventure-next-arrow-shadow: #9a6b22;
+    --adventure-next-arrow-ink: #2f3a4a;
+  }
+
   .adventure-play-root {
     font-family: var(--font-adventure), system-ui, sans-serif;
     color: var(--adventure-text);

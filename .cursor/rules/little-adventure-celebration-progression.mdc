@@ -1,0 +1,379 @@
+---
+alwaysApply: true
+description: Celebration and child-guided progression rules for Little Adventure
+---
+
+# Little Adventure — Celebration & Progression
+
+Pair with [little-adventure-audio.mdc](mdc:.cursor/rules/little-adventure-audio.mdc), [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc), [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc), [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc), and [architecture.mdc](mdc:.cursor/rules/architecture.mdc).
+
+## Core Principle
+
+Little Adventure should make the child an active participant, not a passive viewer.
+
+After a child successfully completes an activity:
+
+SUCCESS
+→ CELEBRATE
+→ ACKNOWLEDGE
+→ GUIDE
+→ CHILD ACTS
+→ CONTINUE
+
+The application must not automatically move the child forward after a normal challenge.
+
+The child should understand:
+"I did something → I got positive feedback → now I need to do something."
+
+---
+
+## 1. Celebration
+
+A successful challenge should have a short, positive celebration.
+
+The celebration may include:
+- Character animation
+- Gentle visual effects
+- Small stars/bubbles
+- Short cheerful jingle
+- Positive voice feedback
+
+Keep celebrations:
+- Warm
+- Playful
+- Short
+- Predictable
+- Sensory-friendly
+
+Avoid:
+- Flashing
+- Rapid movement
+- Loud sounds
+- Excessive confetti
+- Game-show style effects
+- Long animations that delay interaction
+
+The visible success message for normal challenges is:
+
+"Good Job!"
+
+Do not use "Hooray!" or "Hoorah!" as the primary success message.
+
+The existing centralized audio system should provide the corresponding "Good Job!" voice.
+
+Visual treatment of "Good Job!" is defined in **Good Job Visual Treatment** below.
+
+---
+
+## 1A. Celebration Composition
+
+The celebration must be treated as ONE coordinated visual scene/state.
+
+All celebration elements belong to the same composition:
+- Good Job message
+- existing mascot
+- balloons
+- bubbles
+- small stars/sprinkles
+- celebration motion
+- celebration audio
+
+These elements must not appear as separate sequential UI screens.
+
+When the celebration begins, the child should immediately see a coherent celebration scene.
+
+Do NOT create an intermediate visible state where:
+- Good Job appears before the other celebration elements
+- balloons/bubbles appear several seconds later
+- the mascot appears after the celebration has already started
+- Next is visible while celebration elements are still entering
+- the celebration looks incomplete while other elements are loading/animating
+
+Small individual animations are allowed, but they must be coordinated.
+The child should perceive them as one celebration, not a sequence of separate screens.
+
+The celebration should have one clear visual hierarchy:
+
+1. Good Job
+2. Celebrating mascot
+3. Supporting decorative effects
+4. No Next action yet
+
+The Next action belongs to the GUIDANCE state, not the CELEBRATION state.
+
+---
+
+## Good Job Visual Treatment
+
+"Good Job!" should feel like part of the Little Adventure game world.
+
+It must NOT look like:
+- a notification
+- a toast
+- a dashboard card
+- a generic shadcn/ui component
+- a web-app alert
+- a heavy rectangular UI panel
+
+The Good Job treatment should feel playful, warm, illustrated, and integrated with the existing Little Adventure scene.
+
+The existing mascot and celebration environment should visually relate to the Good Job message.
+
+Prioritize visual integration over adding more decoration.
+
+---
+
+## 2. No Automatic Progression
+
+For normal challenges, NEVER automatically advance to the next challenge because:
+
+- A timer completed
+- A celebration animation completed
+- A voice clip completed
+- A sound effect completed
+- A motion animation completed
+
+After the celebration finishes, the application must wait for an explicit child action.
+
+This is an intentional interaction boundary.
+
+---
+
+## 3. Guided Next Action
+
+After the celebration finishes, present a clear next action.
+
+The child should receive BOTH:
+
+1. A visual cue
+2. A spoken instruction
+
+The visual cue should clearly identify the interactive target.
+
+Preferred pattern:
+
+        👉
+     NEXT →
+
+The pointer/arrow should point toward the actual Next button.
+
+The visual cue should be:
+- Large enough to notice
+- Friendly
+- Simple
+- Gently animated
+- Easy to understand
+- Tablet-friendly
+
+Use subtle bounce/pulse motion.
+
+Do not use:
+- Flashing arrows
+- Rapid movement
+- Excessive animation
+- Multiple competing visual targets
+
+---
+
+## 4. Spoken Guidance
+
+When the Next action becomes available, the child should hear:
+
+"Click here to proceed."
+
+This is an interaction instruction.
+
+Use the centralized Little Adventure audio architecture.
+
+Do not use:
+- Browser speech synthesis
+- `new Audio(...)`
+- Ad-hoc HTML audio
+- Separate audio state
+- Game-specific audio managers
+
+The instruction should work with the existing music ducking behavior.
+
+If the voice asset does not exist yet, do not invent or generate one in code.
+
+Register the required semantic asset and clearly report the missing asset.
+
+---
+
+## 5. Synchronization
+
+The visual and audio instruction should begin together.
+
+When:
+
+"Click here to proceed."
+
+plays:
+
+- Next button is visible
+- Pointer is visible
+- Pointer points toward Next
+- Button has a subtle visual affordance
+
+The child should not have to read text to understand the instruction.
+
+---
+
+## 6. Next Button
+
+The Next button should:
+
+- Be large
+- Have a large touch target
+- Be visually obvious
+- Match Little Adventure's existing visual language
+- Be easy for a young child to tap
+
+Do not introduce unnecessary UI complexity.
+
+Reuse existing components/styles where appropriate.
+
+The button should not be active before the celebration reaches the appropriate point.
+
+---
+
+## 7. Child Action
+
+When the child taps Next:
+
+1. End the guidance state.
+2. Stop/hide the pointer.
+3. Play the existing appropriate transition/interaction sound.
+4. Move to the next challenge.
+5. Start the next challenge normally.
+6. Allow the next challenge's instruction system to work normally.
+
+Background music must NOT restart.
+
+---
+
+## 8. Final Challenge
+
+The final challenge is different from normal challenge progression.
+
+Normal challenge:
+
+SUCCESS
+→ Celebration
+→ Good Job!
+→ Click here to proceed
+→ Child taps Next
+→ Next challenge
+
+Final challenge:
+
+SUCCESS
+→ Final celebration
+→ Final success feedback
+→ Existing completion flow
+
+Do not force the normal Next pattern onto the final completion flow unless explicitly requested.
+
+The final completion experience should remain a distinct experience.
+
+---
+
+## 9. Consistency Across Games
+
+All existing Little Adventure games should use the same celebration-to-progression principle.
+
+A child should not have to learn a different interaction pattern for every game.
+
+Normal challenge progression should consistently be:
+
+Celebrate → Guide → Child taps → Continue.
+
+---
+
+## 10. Audio Architecture
+
+Use the centralized audio system.
+
+Semantic audio concepts include:
+
+- interaction
+- final interaction
+- success
+- retry
+- instruction
+- transition
+- final success
+
+Do not create duplicate audio systems.
+
+Voice should remain separate from music and effects.
+
+Music should duck appropriately during voice instructions.
+
+Audio OFF must continue to suppress audio while preserving the visual interaction cue.
+
+The experience must remain understandable visually when audio is disabled.
+
+---
+
+## 11. Accessibility / Sensory Design
+
+Little Adventure is designed for young children.
+
+Prefer:
+- Gentle motion
+- Clear visual hierarchy
+- Large targets
+- Predictable interactions
+- Positive reinforcement
+- Low cognitive load
+
+Avoid:
+- Flashing
+- Sudden movement
+- Sudden loud audio
+- Negative/error sounds
+- "Game Over"
+- Lost lives/hearts
+- Harsh failure states
+
+---
+
+## 12. Implementation Philosophy
+
+Do not over-engineer.
+
+Prefer:
+- Small reusable components
+- Existing Little Adventure components
+- Existing audio architecture
+- Existing state management patterns
+
+Do not create a generic game engine solely to implement celebration behavior.
+
+Do not redesign unrelated screens.
+
+Do not add parent settings unless explicitly requested.
+
+Do not add future game functionality unless explicitly requested.
+
+---
+
+## 13. Validation
+
+Any implementation involving celebration/progression must verify:
+
+- No unintended automatic progression
+- Celebration plays once
+- Celebration appears as one coordinated scene (not sequential screens)
+- Good Job is integrated with the scene (not a toast/card/alert)
+- Good Job voice plays once
+- Next is not visible during the celebration state
+- Next instruction plays at the correct time
+- Pointer appears at the correct time
+- Next button requires explicit child interaction
+- Pointer disappears after Next
+- Next challenge starts correctly
+- Background music does not restart
+- Existing audio ducking still works
+- Audio OFF still preserves visual guidance

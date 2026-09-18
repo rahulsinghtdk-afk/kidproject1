@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
-import { ChildButton, ChildHeading } from "@/components/child";
+import { ChildHeading } from "@/components/child";
 import {
   adventureMotionVariants,
   adventureTransition,
@@ -15,24 +15,20 @@ import {
   touchEachPrompt,
 } from "@/data/counting/object-kinds";
 import {
-  CLAP_CELEBRATION_MS,
-  CLAP_CELEBRATION_MS_REDUCED,
-  FINAL_CELEBRATION_MS,
-  FINAL_CELEBRATION_MS_REDUCED,
-} from "@/lib/audio/celebration-timing";
-import {
   countAndChooseTouchPhaseInstruction,
   countHowManyInstruction,
 } from "@/lib/audio";
 import { useAudio } from "@/hooks/use-audio";
+import { useChallengeCelebrationProgression } from "@/hooks/use-challenge-celebration-progression";
 import { useChallengeInstruction } from "@/hooks/use-challenge-instruction";
+import { ChallengeGoodJobMessage } from "@/components/play/challenge-good-job-message";
+import { ChallengeNextGuidance } from "@/components/play/challenge-next-guidance";
 import {
-  CELEBRATION_BEAT_TIMES,
-  CELEBRATION_DURATION_SEC,
-  CELEBRATION_EASE,
-  MASCOT_PATH,
+  MASCOT_CELEBRATION_ANCHOR,
 } from "@/lib/motion/celebration-motion";
-import { cn } from "@/lib/utils";
+import { CelebrationBalloons } from "@/components/play/celebration-balloons";
+import { CelebrationEffectsFrame } from "@/components/play/celebration-effects-frame";
+import { CelebrationSparkles } from "@/components/play/celebration-sparkles";
 import { CelebrationBubbles } from "./celebration-bubbles";
 import { CountableObject } from "./countable-object";
 import { CountingPlaymat } from "./counting-playmat";
@@ -40,6 +36,7 @@ import { PlayCompanionCharacter } from "./play-companion-character";
 import { PlayProgressIndicator } from "./play-progress-indicator";
 import { TouchCountCounter } from "./touch-count-counter";
 import { HearAgainButton } from "./hear-again-button";
+import { CountChooseQuestionPanel } from "./count-choose-question-panel";
 
 type CountingChallengeViewProps = {
   challenge: CountAndChooseChallenge;
@@ -48,8 +45,6 @@ type CountingChallengeViewProps = {
   isLastChallenge?: boolean;
   onComplete: () => void;
 };
-
-const answerVariants = ["primary", "orange", "secondary"] as const;
 
 function CountingChallengeView({
   challenge,
@@ -71,21 +66,42 @@ function CountingChallengeView({
   );
 
   const [countedOrder, setCountedOrder] = useState<number[]>([]);
-  const [celebrating, setCelebrating] = useState(false);
   const [nudgeAnswers, setNudgeAnswers] = useState(false);
   const [counterEmphasis, setCounterEmphasis] = useState(false);
   const [instructionVisualKey, setInstructionVisualKey] = useState(0);
   const [replayTapHints, setReplayTapHints] = useState(false);
+  const [answerChoicesRevealed, setAnswerChoicesRevealed] = useState(false);
+  const handleAnswerChoicesRevealed = useCallback(() => {
+    setAnswerChoicesRevealed(true);
+  }, []);
 
   const countedSet = useMemo(() => new Set(countedOrder), [countedOrder]);
   const touchCount = countedOrder.length;
   const allCounted = touchCount >= challenge.count;
   const showTapHint = touchCount === 0;
 
+  const {
+    celebrating,
+    showCelebrationScene,
+    showNextGuidance,
+    challengeInstructionsActive,
+    playLocked,
+    beginSuccessCelebration,
+    handleNext,
+  } = useChallengeCelebrationProgression({
+    isLastChallenge,
+    reducedMotion,
+    onAdvance: onComplete,
+  });
+
+  const questionPhaseActive = allCounted && !playLocked;
+
   const companionMood = celebrating
     ? "celebrate"
-    : allCounted
-      ? "encouraging"
+    : questionPhaseActive
+      ? answerChoicesRevealed
+        ? "encouraging"
+        : "requesting"
       : "curious";
 
   const currentInstruction = useMemo(
@@ -106,14 +122,14 @@ function CountingChallengeView({
   const { registerInteraction, hearAgain } = useChallengeInstruction(
     currentInstruction,
     {
-      active: !celebrating,
+      active: challengeInstructionsActive,
       onHearAgain: bumpInstructionVisual,
     }
   );
 
   const handleObjectTap = useCallback(
     (index: number) => {
-      if (celebrating) return;
+      if (playLocked) return;
       if (countedSet.has(index)) return;
 
       registerInteraction();
@@ -134,7 +150,7 @@ function CountingChallengeView({
     },
     [
       audio,
-      celebrating,
+      playLocked,
       challenge.count,
       countedSet,
       registerInteraction,
@@ -144,24 +160,12 @@ function CountingChallengeView({
 
   const handleAnswer = useCallback(
     (choice: number) => {
-      if (celebrating || !allCounted) return;
+      if (playLocked || !allCounted) return;
 
       registerInteraction();
 
       if (choice === challenge.count) {
-        setCelebrating(true);
-        audio.playSuccess();
-        audio.playGoodJob();
-        const celebrationMs = isLastChallenge
-          ? reducedMotion
-            ? FINAL_CELEBRATION_MS_REDUCED
-            : FINAL_CELEBRATION_MS
-          : reducedMotion
-            ? CLAP_CELEBRATION_MS_REDUCED
-            : CLAP_CELEBRATION_MS;
-        window.setTimeout(() => {
-          onComplete();
-        }, celebrationMs);
+        beginSuccessCelebration();
         return;
       }
 
@@ -172,11 +176,9 @@ function CountingChallengeView({
     [
       allCounted,
       audio,
-      celebrating,
+      beginSuccessCelebration,
+      playLocked,
       challenge.count,
-      isLastChallenge,
-      onComplete,
-      reducedMotion,
       registerInteraction,
     ]
   );
@@ -199,34 +201,38 @@ function CountingChallengeView({
       <div className="relative flex min-h-0 flex-1 flex-col gap-4 landscape:flex-row landscape:items-stretch landscape:gap-5">
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-center sm:gap-8">
-            <motion.div
-              key={`${allCounted ? "how-many" : "touch-each"}-${instructionVisualKey}`}
-              initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
-              animate={{ opacity: celebrating ? 0 : 1, y: 0 }}
-              transition={adventureTransition.normal}
-              className={celebrating ? "pointer-events-none sr-only" : undefined}
-            >
-              <ChildHeading level={2} as="h2" className="text-balance">
-                {allCounted ? "How many?" : touchEachPrompt(challenge.objectKind)}
-              </ChildHeading>
-            </motion.div>
+            {!allCounted ? (
+              <motion.div
+                key={`touch-each-${instructionVisualKey}`}
+                initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
+                animate={{ opacity: playLocked ? 0 : 1, y: 0 }}
+                transition={adventureTransition.normal}
+                className={playLocked ? "pointer-events-none sr-only" : undefined}
+              >
+                <ChildHeading level={2} as="h2" className="text-balance">
+                  {touchEachPrompt(challenge.objectKind)}
+                </ChildHeading>
+              </motion.div>
+            ) : null}
 
-            {!celebrating ? (
+            {!playLocked ? (
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <TouchCountCounter
                   count={touchCount}
                   emphasize={counterEmphasis}
                 />
-                <HearAgainButton onPress={hearAgain} />
+                {!allCounted ? <HearAgainButton onPress={hearAgain} /> : null}
               </div>
             ) : null}
           </div>
 
           <motion.div
             className="relative w-full flex-1"
-            variants={celebrating ? adventureMotionVariants.successPop : undefined}
+            variants={
+              showCelebrationScene ? adventureMotionVariants.successPop : undefined
+            }
             initial="initial"
-            animate={celebrating ? "animate" : undefined}
+            animate={showCelebrationScene ? "animate" : undefined}
           >
             <CountingPlaymat objectKind={challenge.objectKind}>
               {Array.from({ length: challenge.count }, (_, index) => (
@@ -244,84 +250,49 @@ function CountingChallengeView({
             </CountingPlaymat>
           </motion.div>
 
-          {allCounted && !celebrating ? (
-            <motion.div
-              className="w-full px-1"
-              initial={{ opacity: 0, y: reducedMotion ? 0 : 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={adventureTransition.slow}
-            >
-              <motion.div
-                className={cn(
-                  "mx-auto grid max-w-lg grid-cols-3 gap-4 sm:gap-5",
-                  "rounded-[var(--adventure-radius-2xl)] border-2 border-adventure-border/90",
-                  "bg-[color-mix(in_srgb,var(--adventure-secondary)_10%,var(--adventure-surface))] p-4 sm:p-5",
-                  "shadow-[inset_0_2px_12px_rgb(55_65_81_/_0.04)]"
-                )}
-                variants={
-                  nudgeAnswers ? adventureMotionVariants.gentleNudge : undefined
-                }
-                initial="initial"
-                animate={nudgeAnswers ? "animate" : undefined}
-              >
-                {answerChoices.map((choice, choiceIndex) => (
-                  <ChildButton
-                    key={`${challenge.id}-choice-${choice}-${choiceIndex}`}
-                    variant={
-                      answerVariants[choiceIndex % answerVariants.length]
-                    }
-                    size="large"
-                    className="min-h-[4.5rem] w-full tabular-nums text-[length:var(--adventure-text-2xl)] shadow-[var(--adventure-shadow-sm)]"
-                    onClick={() => handleAnswer(choice)}
-                  >
-                    {choice}
-                  </ChildButton>
-                ))}
-              </motion.div>
-            </motion.div>
+          {questionPhaseActive ? (
+            <CountChooseQuestionPanel
+              key={`${challenge.id}-how-many`}
+              challengeId={challenge.id}
+              instructionVisualKey={instructionVisualKey}
+              answerChoices={answerChoices}
+              nudgeAnswers={nudgeAnswers}
+              onHearAgain={hearAgain}
+              onAnswer={handleAnswer}
+              onAnswerChoicesRevealed={handleAnswerChoicesRevealed}
+            />
           ) : null}
         </div>
 
-        {!celebrating ? (
+        {!playLocked ? (
           <div className="flex justify-center landscape:w-[8.5rem] landscape:items-end landscape:pb-4">
             <PlayCompanionCharacter mood={companionMood} />
           </div>
         ) : null}
 
-        {celebrating ? (
-          <motion.div
-            className="pointer-events-none absolute inset-0 z-20 overflow-hidden"
-            aria-hidden
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.35, ease: "easeOut" }}
-          >
-            <CelebrationBubbles className="z-0" />
+        {showCelebrationScene ? (
+          <div className="pointer-events-none absolute inset-0 z-20 overflow-hidden">
+            <CelebrationEffectsFrame>
+              <CelebrationBalloons className="z-[1]" />
+              <CelebrationBubbles className="z-[2]" />
+              <CelebrationSparkles />
+              <ChallengeGoodJobMessage visible partOfCelebrationScene />
+            </CelebrationEffectsFrame>
 
-            <motion.div
-              className="absolute z-10"
-              initial={{ left: "72%", top: "60%" }}
-              animate={
-                reducedMotion
-                  ? { left: "46%", top: "40%" }
-                  : {
-                      left: [...MASCOT_PATH.left],
-                      top: [...MASCOT_PATH.top],
-                      rotate: [...MASCOT_PATH.rotate],
-                    }
-              }
-              transition={{
-                duration: CELEBRATION_DURATION_SEC,
-                ease: CELEBRATION_EASE,
-                times: reducedMotion
-                  ? undefined
-                  : [...CELEBRATION_BEAT_TIMES],
+            <div
+              className="absolute z-10 -translate-x-1/2 -translate-y-1/2"
+              style={{
+                left: MASCOT_CELEBRATION_ANCHOR.left,
+                top: MASCOT_CELEBRATION_ANCHOR.top,
               }}
-              style={{ x: "-50%", y: "-50%" }}
             >
-              <PlayCompanionCharacter mood="celebrate" clapping />
-            </motion.div>
-          </motion.div>
+              <PlayCompanionCharacter mood="celebrate" clapping={celebrating} />
+            </div>
+          </div>
+        ) : null}
+
+        {showNextGuidance ? (
+          <ChallengeNextGuidance onNext={handleNext} />
         ) : null}
       </div>
     </motion.div>

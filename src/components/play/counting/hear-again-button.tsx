@@ -1,8 +1,8 @@
 "use client";
 
-import { Volume2 } from "lucide-react";
 import { ChildButton } from "@/components/child";
 import { cn } from "@/lib/utils";
+import { HearAgainMegaphoneIcon } from "./hear-again-megaphone-icon";
 
 type HearAgainButtonProps = {
   onPress: () => void;
@@ -14,17 +14,20 @@ function HearAgainButton({ onPress, className }: HearAgainButtonProps) {
   return (
     <ChildButton
       type="button"
-      variant="secondary"
-      size="large"
+      variant="orange"
+      size="default"
       className={cn(
-        "min-h-[3.75rem] min-w-[3.75rem] gap-2 px-5 shadow-[var(--adventure-shadow-sm)]",
+        "min-h-[var(--adventure-touch-min)] gap-1.5 rounded-[var(--adventure-radius-full)] px-4",
+        "text-[length:var(--adventure-text-md)] shadow-[var(--adventure-shadow-md)]",
         className
       )}
       onClick={onPress}
       aria-label="Hear again"
     >
-      <Volume2 className="size-8 shrink-0" strokeWidth={2.25} aria-hidden />
-      <span className="sr-only">Hear again</span>
+      <HearAgainMegaphoneIcon className="size-7" />
+      <span className="font-[family-name:var(--font-adventure)] font-bold tracking-wide">
+        Again
+      </span>
     </ChildButton>
   );
 }
