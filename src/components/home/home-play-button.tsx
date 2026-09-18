@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { Play } from "lucide-react";
 import { motion, useReducedMotion } from "motion/react";
+import { getAudioManager } from "@/lib/audio";
 import { adventureTapScale, adventureTransition } from "@/lib/motion/adventure-motion";
 import { cn } from "@/lib/utils";
 
@@ -39,6 +40,11 @@ function HomePlayButton({ className }: HomePlayButtonProps) {
       >
         <Link
           href="/play"
+          onClick={() => {
+            const manager = getAudioManager();
+            manager.unlockFromUserGesture();
+            manager.startMusic();
+          }}
           className={cn(
             "flex min-h-[5.25rem] w-full items-center justify-center gap-3",
             "rounded-[var(--adventure-radius-2xl)] border-[3px]",

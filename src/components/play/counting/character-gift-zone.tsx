@@ -13,6 +13,8 @@ type CharacterGiftZoneProps = {
   requestObjectPhrase: string;
   requestAriaLabel: string;
   collectedEmojis: string[];
+  /** Bumps when Hear Again replays the request (re-animate speech bubble). */
+  instructionVisualKey?: number;
   className?: string;
 };
 
@@ -24,6 +26,7 @@ const CharacterGiftZone = forwardRef<HTMLDivElement, CharacterGiftZoneProps>(
       requestObjectPhrase,
       requestAriaLabel,
       collectedEmojis,
+      instructionVisualKey = 0,
       className,
     },
     ref
@@ -38,6 +41,7 @@ const CharacterGiftZone = forwardRef<HTMLDivElement, CharacterGiftZoneProps>(
         )}
       >
         <motion.div
+          key={`request-bubble-${instructionVisualKey}`}
           className={cn(
             "relative max-w-[min(100%,20rem)] rounded-[var(--adventure-radius-2xl)]",
             "border-[3px] border-adventure-border-strong bg-adventure-surface/95",

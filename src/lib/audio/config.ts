@@ -19,6 +19,14 @@ export const DEFAULT_AUDIO_CONFIG: AudioDefaults = {
   fades: {
     musicInMs: 900,
     musicOutMs: 650,
+    musicContextMs: 480,
+  },
+  musicContext: {
+    levels: {
+      home: 1,
+      /** Play hub, games, and completion — ~20% of home music level. */
+      play: 0.2,
+    },
   },
 };
 

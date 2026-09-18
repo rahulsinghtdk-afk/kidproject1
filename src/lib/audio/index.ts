@@ -1,11 +1,29 @@
-export { AUDIO_ASSET_PATHS } from "./assets";
-export type { AudioEffectKey, AudioVoiceKey } from "./assets";
+export {
+  AUDIO_ASSET_PATHS,
+  DEFAULT_MUSIC_THEME_ID,
+  MUSIC_THEMES,
+  getDefaultMusicTheme,
+  resolveMusicThemeSrc,
+} from "./assets";
+export type {
+  AudioEffectKey,
+  AudioVoiceKey,
+  MusicThemeConfig,
+  MusicThemeId,
+} from "./assets";
 export { DEFAULT_AUDIO_CONFIG, getDuckingMultiplier } from "./config";
+export {
+  countAndChooseTouchPhaseInstruction,
+  countHowManyInstruction,
+  countTouchEachInstruction,
+  helpAFriendRequestInstruction,
+} from "./voice-instructions";
 export { getAudioManager } from "./audio-manager";
 export type {
   AudioChannel,
   AudioChannelConfig,
   AudioDefaults,
   InstructionAudioRef,
+  MusicContext,
   MusicDuckingStrength,
 } from "./types";

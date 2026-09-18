@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo } from "react";
 import { getAudioManager } from "@/lib/audio";
-import type { AudioChannel, InstructionAudioRef } from "@/lib/audio";
+import type { AudioChannel, InstructionAudioRef, MusicContext } from "@/lib/audio";
 
 export function useAudio() {
   const manager = getAudioManager();
@@ -23,6 +23,14 @@ export function useAudio() {
     manager.playRetry();
   }, [manager]);
 
+  const playGoodJob = useCallback(() => {
+    manager.playGoodJob();
+  }, [manager]);
+
+  const playThatsEnough = useCallback(() => {
+    manager.playThatsEnough();
+  }, [manager]);
+
   const playTransition = useCallback(() => {
     manager.playTransition();
   }, [manager]);
@@ -39,8 +47,8 @@ export function useAudio() {
   }, [manager]);
 
   const playFinalSuccess = useCallback(
-    (childName?: string) => {
-      manager.playFinalSuccess(childName);
+    (childName?: string, options?: { finalAdventure?: boolean }) => {
+      manager.playFinalSuccess(childName, options);
     },
     [manager]
   );
@@ -71,12 +79,21 @@ export function useAudio() {
     [manager]
   );
 
+  const setMusicContext = useCallback(
+    (context: MusicContext) => {
+      manager.setMusicContext(context);
+    },
+    [manager]
+  );
+
   return useMemo(
     () => ({
       playInteraction,
       playFinalInteraction,
       playSuccess,
       playRetry,
+      playGoodJob,
+      playThatsEnough,
       playTransition,
       playInstruction,
       replayInstruction,
@@ -86,12 +103,15 @@ export function useAudio() {
       unlockFromUserGesture,
       setChannelVolume,
       setChannelEnabled,
+      setMusicContext,
     }),
     [
       playInteraction,
       playFinalInteraction,
       playSuccess,
       playRetry,
+      playGoodJob,
+      playThatsEnough,
       playTransition,
       playInstruction,
       replayInstruction,
@@ -101,6 +121,7 @@ export function useAudio() {
       unlockFromUserGesture,
       setChannelVolume,
       setChannelEnabled,
+      setMusicContext,
     ]
   );
 }

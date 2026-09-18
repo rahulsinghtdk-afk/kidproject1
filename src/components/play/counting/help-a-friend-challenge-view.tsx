@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import {
   adventureMotionVariants,
@@ -16,8 +16,10 @@ import { getPoolObjectLayout } from "@/lib/counting/pool-object-layouts";
 import {
   CLAP_CELEBRATION_MS,
   CLAP_CELEBRATION_MS_REDUCED,
-  playCelebrationSound,
-} from "@/lib/audio/play-clap-sound";
+} from "@/lib/audio/celebration-timing";
+import { helpAFriendRequestInstruction } from "@/lib/audio";
+import { useAudio } from "@/hooks/use-audio";
+import { useChallengeInstruction } from "@/hooks/use-challenge-instruction";
 import {
   CELEBRATION_BEAT_TIMES,
   CELEBRATION_DURATION_SEC,
@@ -32,6 +34,7 @@ import { GiftQuantityCounter } from "./gift-quantity-counter";
 import { PlayCompanionCharacter } from "./play-companion-character";
 import { PlayProgressIndicator } from "./play-progress-indicator";
 import { PressToConfirmPad } from "./press-to-confirm-pad";
+import { HearAgainButton } from "./hear-again-button";
 
 type HelpAFriendChallengeViewProps = {
   challenge: HelpAFriendChallenge;
@@ -47,7 +50,10 @@ function HelpAFriendChallengeView({
   onComplete,
 }: HelpAFriendChallengeViewProps) {
   const reducedMotion = useReducedMotion() ?? false;
+  const audio = useAudio();
   const dropTargetRef = useRef<HTMLDivElement>(null);
+  const thatsEnoughSpokenRef = useRef(false);
+  const [instructionVisualKey, setInstructionVisualKey] = useState(0);
   const emoji = COUNTING_OBJECT_EMOJI[challenge.objectKind];
   const layouts = useMemo(
     () => getPoolObjectLayout(challenge.available),
@@ -81,16 +87,40 @@ function HelpAFriendChallengeView({
 
   const collectedEmojis = givenIds.map(() => emoji);
 
+  const requestInstruction = useMemo(
+    () => helpAFriendRequestInstruction(challenge),
+    [challenge]
+  );
+
+  const bumpInstructionVisual = useCallback(() => {
+    setInstructionVisualKey((key) => key + 1);
+  }, []);
+
+  const { registerInteraction, hearAgain } = useChallengeInstruction(
+    requestInstruction,
+    {
+      active: !celebrating && requestInstruction !== null,
+      onHearAgain: bumpInstructionVisual,
+    }
+  );
+
+  useEffect(() => {
+    thatsEnoughSpokenRef.current = false;
+  }, [challenge.id]);
+
   const finishChallenge = useCallback(() => {
     setCelebrating(true);
-    playCelebrationSound();
+    audio.playSuccess();
+    audio.playGoodJob();
     window.setTimeout(() => {
       onComplete();
     }, reducedMotion ? CLAP_CELEBRATION_MS_REDUCED : CLAP_CELEBRATION_MS);
-  }, [onComplete, reducedMotion]);
+  }, [audio, onComplete, reducedMotion]);
 
   const handlePressConfirm = useCallback(() => {
     if (celebrating) return;
+
+    registerInteraction();
 
     if (givenCount === challenge.requested) {
       finishChallenge();
@@ -99,36 +129,57 @@ function HelpAFriendChallengeView({
 
     setPressNudge(true);
     window.setTimeout(() => setPressNudge(false), 500);
-  }, [celebrating, challenge.requested, finishChallenge, givenCount]);
+  }, [
+    celebrating,
+    challenge.requested,
+    finishChallenge,
+    givenCount,
+    registerInteraction,
+  ]);
 
   const handleDeliver = useCallback(
     (index: number): boolean => {
       if (celebrating) return false;
 
-      let accepted = false;
-      setGivenIds((prev) => {
-        if (prev.includes(index) || prev.length >= challenge.requested) {
-          return prev;
-        }
-        accepted = true;
-        return [...prev, index];
-      });
+      if (givenIds.includes(index) || givenCount >= challenge.requested) {
+        return false;
+      }
 
-      if (!accepted) return false;
+      registerInteraction();
+      const nextCount = givenCount + 1;
+      if (nextCount >= challenge.requested) {
+        audio.playFinalInteraction();
+      } else {
+        audio.playInteraction();
+      }
+
+      setGivenIds((prev) => [...prev, index]);
 
       setCounterEmphasis(true);
       window.setTimeout(() => setCounterEmphasis(false), 400);
       return true;
     },
-    [celebrating, challenge.requested]
+    [
+      audio,
+      celebrating,
+      challenge.requested,
+      givenCount,
+      givenIds,
+      registerInteraction,
+    ]
   );
 
   const handleRejectDelivery = useCallback(() => {
     if (!quotaMet) return;
 
+    if (!thatsEnoughSpokenRef.current) {
+      thatsEnoughSpokenRef.current = true;
+      audio.playThatsEnough();
+    }
+
     setGentleFull(true);
     window.setTimeout(() => setGentleFull(false), 700);
-  }, [quotaMet]);
+  }, [audio, quotaMet]);
 
   return (
     <motion.div
@@ -147,15 +198,23 @@ function HelpAFriendChallengeView({
 
       <div className="relative flex min-h-0 flex-1 flex-col gap-4 landscape:flex-row landscape:items-start landscape:gap-5">
         {!celebrating ? (
-          <CharacterGiftZone
-            ref={dropTargetRef}
-            mood={companionMood}
-            requestQuantity={challenge.requested}
-            requestObjectPhrase={requestObjectPhrase}
-            requestAriaLabel={requestAriaLabel}
-            collectedEmojis={collectedEmojis}
-            className="w-full landscape:sticky landscape:top-4 landscape:w-[min(100%,13rem)] landscape:shrink-0"
-          />
+          <div
+            className="flex w-full flex-col items-center gap-3 landscape:sticky landscape:top-4 landscape:w-[min(100%,13rem)] landscape:shrink-0"
+          >
+            <CharacterGiftZone
+              ref={dropTargetRef}
+              mood={companionMood}
+              requestQuantity={challenge.requested}
+              requestObjectPhrase={requestObjectPhrase}
+              requestAriaLabel={requestAriaLabel}
+              collectedEmojis={collectedEmojis}
+              instructionVisualKey={instructionVisualKey}
+              className="w-full"
+            />
+            {requestInstruction ? (
+              <HearAgainButton onPress={hearAgain} />
+            ) : null}
+          </div>
         ) : null}
 
         <div className="flex flex-1 flex-col gap-4">

@@ -59,6 +59,9 @@ function CountAndChooseAdventure({ onExitToPicker }: CountAndChooseAdventureProp
           challenge={challenge}
           challengeIndex={challengeIndex}
           totalChallenges={COUNT_AND_CHOOSE_CHALLENGES.length}
+          isLastChallenge={
+            challengeIndex >= COUNT_AND_CHOOSE_CHALLENGES.length - 1
+          }
           onComplete={handleChallengeComplete}
         />
       </div>

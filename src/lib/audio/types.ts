@@ -19,12 +19,23 @@ export type MusicDuckingConfig = {
 export type AudioFadeConfig = {
   musicInMs: number;
   musicOutMs: number;
+  /** Fade when switching home ↔ play background music level. */
+  musicContextMs: number;
+};
+
+/** Where the child is in the app — adjusts background music level (not voice ducking). */
+export type MusicContext = "home" | "play";
+
+export type MusicContextConfig = {
+  /** Multiplier on `channels.music.volume` (home = 1, play ≈ lower). */
+  levels: Record<MusicContext, number>;
 };
 
 export type AudioDefaults = {
   channels: AudioChannelConfig;
   ducking: MusicDuckingConfig;
   fades: AudioFadeConfig;
+  musicContext: MusicContextConfig;
 };
 
 export type InstructionAudioRef = {

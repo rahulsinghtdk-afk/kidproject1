@@ -1,5 +1,6 @@
 export { AdventureMotion, motion, useReducedMotion } from "./adventure-motion";
 export { ChildButton, childButtonVariants } from "./child-button";
+export { ChildAudioToggle } from "./child-audio-toggle";
 export { MusicButton } from "./music-button";
 export { ChildLinkButton } from "./child-link-button";
 export { ChildShell } from "./child-shell";

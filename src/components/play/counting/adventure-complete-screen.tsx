@@ -57,7 +57,7 @@ function AdventureCompleteScreen({ onPlayAgain }: AdventureCompleteScreenProps) 
                 ✨
               </span>
               <ChildHeading level={1} as="h1" className="text-balance">
-                Adventure Complete!
+                You finished!
               </ChildHeading>
             </motion.div>
 

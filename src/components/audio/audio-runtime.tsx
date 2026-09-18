@@ -14,6 +14,7 @@ function AudioRuntime() {
 
     const unlock = () => {
       manager.unlockFromUserGesture();
+      manager.startMusic();
     };
 
     const options: AddEventListenerOptions = { passive: true, once: true };

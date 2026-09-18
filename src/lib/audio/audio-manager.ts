@@ -1,6 +1,6 @@
 import { AUDIO_ASSET_PATHS, type AudioEffectKey } from "./assets";
 import { DEFAULT_AUDIO_CONFIG, getDuckingMultiplier } from "./config";
-import { loadHowler } from "./howler-loader";
+import { getLoadedHowler, loadHowler } from "./howler-loader";
 import {
   readMusicEnabled,
   subscribeMusicEnabled,
@@ -9,16 +9,45 @@ import type {
   AudioChannel,
   AudioDefaults,
   InstructionAudioRef,
+  MusicContext,
 } from "./types";
 
 type ManagedHowl = import("howler").Howl;
+type HowlWithSrc = ManagedHowl & { _src?: string | string[] };
+type HowlerWithRegistry = import("howler").HowlerGlobal & {
+  _howls?: HowlWithSrc[];
+};
 
 type VoicePlaybackOptions = {
   onEnd?: () => void;
 };
 
+/** Survives HMR so we do not spawn duplicate looping theme tracks. */
+const GLOBAL_MUSIC_HOWL_KEY = "__littleAdventureMusicHowl";
+
+function getRegisteredHowls(
+  mod: NonNullable<Awaited<ReturnType<typeof loadHowler>>>
+): HowlWithSrc[] {
+  return (mod.Howler as HowlerWithRegistry)._howls ?? [];
+}
+
+function isThemeMusicSrc(src: unknown, themePath: string): boolean {
+  if (!src) {
+    return false;
+  }
+  const paths = Array.isArray(src) ? src : [src];
+  return paths.some(
+    (path) => typeof path === "string" && path === themePath
+  );
+}
+
 class AudioManager {
-  private config: AudioDefaults = { ...DEFAULT_AUDIO_CONFIG };
+  private config: AudioDefaults = {
+    ...DEFAULT_AUDIO_CONFIG,
+    musicContext: {
+      levels: { ...DEFAULT_AUDIO_CONFIG.musicContext.levels },
+    },
+  };
   private unlocked = false;
   private unlockPromise: Promise<void> | null = null;
   private masterEnabled = true;
@@ -31,6 +60,7 @@ class AudioManager {
   private lastInstruction: InstructionAudioRef | null = null;
   private unsubscribeMaster: (() => void) | null = null;
   private boundToRuntime = false;
+  private musicContext: MusicContext = "home";
 
   constructor() {
     if (typeof window !== "undefined") {
@@ -40,20 +70,28 @@ class AudioManager {
 
   /** Wire master mute to existing child music toggle storage (Audio ON/OFF path). */
   bindToAppRuntime(): void {
-    if (!this.boundToRuntime || typeof window === "undefined") {
+    if (typeof window === "undefined") {
       return;
     }
     this.masterEnabled = readMusicEnabled();
     this.unsubscribeMaster?.();
     this.unsubscribeMaster = subscribeMusicEnabled(() => {
-      this.masterEnabled = readMusicEnabled();
-      this.applyMasterEnabled();
+      this.syncChildAudioPreference();
     });
   }
 
   setBoundToRuntime(): void {
+    if (this.boundToRuntime) {
+      return;
+    }
     this.boundToRuntime = true;
     this.bindToAppRuntime();
+  }
+
+  /** Apply child Audio ON/OFF from localStorage (music, voice, effects). */
+  syncChildAudioPreference(): void {
+    this.masterEnabled = readMusicEnabled();
+    this.applyMasterEnabled();
   }
 
   getConfig(): Readonly<AudioDefaults> {
@@ -93,6 +131,22 @@ class AudioManager {
       if (channel === "voice") {
         this.stopVoice();
       }
+    }
+  }
+
+  getMusicContext(): MusicContext {
+    return this.musicContext;
+  }
+
+  /** Adjust background music level for home vs play (does not restart the track). */
+  setMusicContext(
+    context: MusicContext,
+    options?: { forceApply?: boolean }
+  ): void {
+    const changed = this.musicContext !== context;
+    this.musicContext = context;
+    if (changed || options?.forceApply) {
+      this.applyMusicContextVolume();
     }
   }
 
@@ -150,7 +204,17 @@ class AudioManager {
 
   playRetry(): void {
     this.unlockFromUserGesture();
-    this.playVoiceClip(AUDIO_ASSET_PATHS.voice.tryAgain);
+    this.playVoiceClip(AUDIO_ASSET_PATHS.voice.tryAgain, { restart: true });
+  }
+
+  playGoodJob(): void {
+    this.unlockFromUserGesture();
+    this.playVoiceClip(AUDIO_ASSET_PATHS.voice.goodJob, { restart: true });
+  }
+
+  playThatsEnough(): void {
+    this.unlockFromUserGesture();
+    this.playVoiceClip(AUDIO_ASSET_PATHS.voice.thatsEnough);
   }
 
   playTransition(): void {
@@ -161,7 +225,7 @@ class AudioManager {
   playInstruction(ref: InstructionAudioRef): void {
     this.unlockFromUserGesture();
     this.lastInstruction = ref;
-    this.playVoiceClip(ref.src);
+    this.playVoiceClip(ref.src, { restart: true });
   }
 
   replayInstruction(): void {
@@ -172,12 +236,18 @@ class AudioManager {
     this.playVoiceClip(this.lastInstruction.src, { restart: true });
   }
 
-  playFinalSuccess(childName?: string): void {
+  playFinalSuccess(childName?: string, options?: { finalAdventure?: boolean }): void {
     this.unlockFromUserGesture();
-    const clip =
-      childName && childName.trim().length > 0
-        ? AUDIO_ASSET_PATHS.voice.goodJobWithName
-        : AUDIO_ASSET_PATHS.voice.goodJob;
+    const trimmed = childName?.trim();
+    let clip: string = AUDIO_ASSET_PATHS.voice.goodJob;
+    if (options?.finalAdventure) {
+      clip =
+        trimmed && trimmed.length > 0
+          ? AUDIO_ASSET_PATHS.voice.goodJobFinal
+          : AUDIO_ASSET_PATHS.voice.goodJob;
+    } else if (trimmed && trimmed.length > 0) {
+      clip = AUDIO_ASSET_PATHS.voice.goodJobWithName;
+    }
     this.playVoiceClip(clip);
   }
 
@@ -199,25 +269,41 @@ class AudioManager {
     }
     const volume = this.effectiveMusicVolume();
     if (!this.musicPlaying) {
-      howl.volume(volume);
+      howl.volume(0);
       howl.play();
+      howl.fade(0, volume, this.config.fades.musicInMs);
       this.musicPlaying = true;
     } else {
-      howl.fade(howl.volume(), volume, this.config.fades.musicInMs);
-    }
-  }
-
-  stopMusic(): void {
-    const howl = this.musicHowl;
-    if (!howl || !this.musicPlaying) {
+      // Route context may update right after gesture — use context fade, not music-in.
+      this.applyMusicContextVolume();
       return;
     }
+    this.applyMusicContextVolume();
+  }
+
+  stopMusic(options?: { immediate?: boolean }): void {
+    const themePath = AUDIO_ASSET_PATHS.music.theme;
+    const howl = this.resolveMusicHowl();
+    const themeActive =
+      Boolean(howl?.playing()) ||
+      this.musicPlaying ||
+      this.hasPlayingThemeHowl(themePath);
+
+    if (!howl || !themeActive) {
+      this.musicPlaying = false;
+      this.musicDuckActive = false;
+      return;
+    }
+
+    if (options?.immediate || !this.masterEnabled) {
+      this.stopAllThemeMusicHowls(themePath);
+      return;
+    }
+
     const current = howl.volume();
     howl.fade(current, 0, this.config.fades.musicOutMs);
     globalThis.setTimeout(() => {
-      howl.stop();
-      this.musicPlaying = false;
-      this.musicDuckActive = false;
+      this.stopAllThemeMusicHowls(themePath);
     }, this.config.fades.musicOutMs);
   }
 
@@ -254,10 +340,35 @@ class AudioManager {
 
   private applyMasterEnabled(): void {
     if (!this.masterEnabled) {
-      this.stopMusic();
+      void loadHowler().then((mod) => {
+        mod?.Howler.mute(true);
+      });
+      this.stopMusic({ immediate: true });
       this.stopVoice();
       this.stopAllEffects();
+      return;
     }
+    void loadHowler().then((mod) => {
+      if (mod) {
+        mod.Howler.mute(false);
+      }
+      this.startMusic();
+    });
+  }
+
+  private applyMusicContextVolume(): void {
+    const howl = this.resolveMusicHowl();
+    if (!howl) {
+      return;
+    }
+    const target = this.effectiveMusicVolume();
+    const fadeMs = this.config.fades.musicContextMs;
+    if (howl.playing()) {
+      this.musicPlaying = true;
+      howl.fade(howl.volume(), target, fadeMs);
+      return;
+    }
+    howl.volume(target);
   }
 
   private applyChannelVolumes(): void {
@@ -274,28 +385,117 @@ class AudioManager {
 
   private effectiveMusicVolume(): number {
     const base = this.config.channels.music.volume;
+    const contextLevel = this.config.musicContext.levels[this.musicContext];
+    let volume = base * contextLevel;
     if (this.musicDuckActive) {
-      return (
-        base *
-        getDuckingMultiplier(
-          this.config.ducking.strength,
-          this.config.ducking
-        )
+      volume *= getDuckingMultiplier(
+        this.config.ducking.strength,
+        this.config.ducking
       );
     }
-    return base;
+    return volume;
+  }
+
+  private resolveMusicHowl(): ManagedHowl | null {
+    const globalHowl = (
+      globalThis as typeof globalThis & {
+        [GLOBAL_MUSIC_HOWL_KEY]?: ManagedHowl;
+      }
+    )[GLOBAL_MUSIC_HOWL_KEY];
+    if (globalHowl) {
+      this.musicHowl = globalHowl;
+    }
+    return this.musicHowl;
+  }
+
+  private hasPlayingThemeHowl(themePath: string): boolean {
+    const mod = getLoadedHowler();
+    if (!mod) {
+      return false;
+    }
+    return getRegisteredHowls(mod).some(
+      (howl) => isThemeMusicSrc(howl._src, themePath) && howl.playing()
+    );
+  }
+
+  private stopAllThemeMusicHowls(themePath: string): void {
+    const mod = getLoadedHowler();
+    if (mod) {
+      for (const howl of getRegisteredHowls(mod)) {
+        if (!isThemeMusicSrc(howl._src, themePath)) {
+          continue;
+        }
+        howl.stop();
+        howl.volume(0);
+      }
+    }
+    const tracked = this.resolveMusicHowl();
+    tracked?.stop();
+    tracked?.volume(0);
+    this.musicPlaying = false;
+    this.musicDuckActive = false;
+  }
+
+  private dedupeThemeMusicHowls(
+    mod: NonNullable<Awaited<ReturnType<typeof loadHowler>>>,
+    themePath: string
+  ): ManagedHowl | null {
+    const globalHowl = (
+      globalThis as typeof globalThis & {
+        [GLOBAL_MUSIC_HOWL_KEY]?: ManagedHowl;
+      }
+    )[GLOBAL_MUSIC_HOWL_KEY];
+
+    const themeHowls = getRegisteredHowls(mod).filter((howl) =>
+      isThemeMusicSrc(howl._src, themePath)
+    );
+
+    if (globalHowl && themeHowls.includes(globalHowl)) {
+      for (const howl of themeHowls) {
+        if (howl !== globalHowl) {
+          howl.stop();
+          howl.unload();
+        }
+      }
+      return globalHowl;
+    }
+
+    if (themeHowls.length > 0) {
+      const keeper = themeHowls[themeHowls.length - 1];
+      for (const howl of themeHowls) {
+        if (howl !== keeper) {
+          howl.stop();
+          howl.unload();
+        }
+      }
+      return keeper;
+    }
+
+    return null;
   }
 
   private async ensureMusicHowl(): Promise<ManagedHowl | null> {
-    if (this.musicHowl) {
-      return this.musicHowl;
+    const existing = this.resolveMusicHowl();
+    if (existing) {
+      return existing;
     }
     const mod = await loadHowler();
     if (!mod) {
       return null;
     }
+    const themePath = AUDIO_ASSET_PATHS.music.theme;
+    const reused = this.dedupeThemeMusicHowls(mod, themePath);
+    if (reused) {
+      this.musicHowl = reused;
+      (
+        globalThis as typeof globalThis & {
+          [GLOBAL_MUSIC_HOWL_KEY]?: ManagedHowl;
+        }
+      )[GLOBAL_MUSIC_HOWL_KEY] = reused;
+      return reused;
+    }
     this.musicHowl = new mod.Howl({
-      src: [AUDIO_ASSET_PATHS.music.theme],
+      src: [themePath],
       loop: true,
       preload: true,
       volume: 0,
@@ -304,6 +504,11 @@ class AudioManager {
         /* assets not added yet */
       },
     });
+    (
+      globalThis as typeof globalThis & {
+        [GLOBAL_MUSIC_HOWL_KEY]?: ManagedHowl;
+      }
+    )[GLOBAL_MUSIC_HOWL_KEY] = this.musicHowl;
     return this.musicHowl;
   }
 
@@ -454,6 +659,9 @@ let sharedManager: AudioManager | null = null;
 export function getAudioManager(): AudioManager {
   if (!sharedManager) {
     sharedManager = new AudioManager();
+  }
+  if (typeof window !== "undefined") {
+    sharedManager.setBoundToRuntime();
   }
   return sharedManager;
 }

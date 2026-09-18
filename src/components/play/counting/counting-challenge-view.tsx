@@ -17,8 +17,15 @@ import {
 import {
   CLAP_CELEBRATION_MS,
   CLAP_CELEBRATION_MS_REDUCED,
-  playCelebrationSound,
-} from "@/lib/audio/play-clap-sound";
+  FINAL_CELEBRATION_MS,
+  FINAL_CELEBRATION_MS_REDUCED,
+} from "@/lib/audio/celebration-timing";
+import {
+  countAndChooseTouchPhaseInstruction,
+  countHowManyInstruction,
+} from "@/lib/audio";
+import { useAudio } from "@/hooks/use-audio";
+import { useChallengeInstruction } from "@/hooks/use-challenge-instruction";
 import {
   CELEBRATION_BEAT_TIMES,
   CELEBRATION_DURATION_SEC,
@@ -32,11 +39,13 @@ import { CountingPlaymat } from "./counting-playmat";
 import { PlayCompanionCharacter } from "./play-companion-character";
 import { PlayProgressIndicator } from "./play-progress-indicator";
 import { TouchCountCounter } from "./touch-count-counter";
+import { HearAgainButton } from "./hear-again-button";
 
 type CountingChallengeViewProps = {
   challenge: CountAndChooseChallenge;
   challengeIndex: number;
   totalChallenges: number;
+  isLastChallenge?: boolean;
   onComplete: () => void;
 };
 
@@ -46,9 +55,11 @@ function CountingChallengeView({
   challenge,
   challengeIndex,
   totalChallenges,
+  isLastChallenge = false,
   onComplete,
 }: CountingChallengeViewProps) {
   const reducedMotion = useReducedMotion() ?? false;
+  const audio = useAudio();
   const emoji = COUNTING_OBJECT_EMOJI[challenge.objectKind];
   const layouts = useMemo(
     () => getObjectLayout(challenge.count),
@@ -63,8 +74,10 @@ function CountingChallengeView({
   const [celebrating, setCelebrating] = useState(false);
   const [nudgeAnswers, setNudgeAnswers] = useState(false);
   const [counterEmphasis, setCounterEmphasis] = useState(false);
+  const [instructionVisualKey, setInstructionVisualKey] = useState(0);
+  const [replayTapHints, setReplayTapHints] = useState(false);
 
-  const countedSet = new Set(countedOrder);
+  const countedSet = useMemo(() => new Set(countedOrder), [countedOrder]);
   const touchCount = countedOrder.length;
   const allCounted = touchCount >= challenge.count;
   const showTapHint = touchCount === 0;
@@ -75,9 +88,43 @@ function CountingChallengeView({
       ? "encouraging"
       : "curious";
 
+  const currentInstruction = useMemo(
+    () =>
+      allCounted
+        ? countHowManyInstruction()
+        : countAndChooseTouchPhaseInstruction(challenge),
+    [allCounted, challenge]
+  );
+
+  const bumpInstructionVisual = useCallback(() => {
+    setInstructionVisualKey((key) => key + 1);
+    if (!allCounted) {
+      setReplayTapHints(true);
+    }
+  }, [allCounted]);
+
+  const { registerInteraction, hearAgain } = useChallengeInstruction(
+    currentInstruction,
+    {
+      active: !celebrating,
+      onHearAgain: bumpInstructionVisual,
+    }
+  );
+
   const handleObjectTap = useCallback(
     (index: number) => {
       if (celebrating) return;
+      if (countedSet.has(index)) return;
+
+      registerInteraction();
+      setReplayTapHints(false);
+      const willCompleteTouchPhase = touchCount + 1 >= challenge.count;
+      if (willCompleteTouchPhase) {
+        audio.playFinalInteraction();
+      } else {
+        audio.playInteraction();
+      }
+
       setCountedOrder((prev) => {
         if (prev.includes(index)) return prev;
         return [...prev, index];
@@ -85,26 +132,53 @@ function CountingChallengeView({
       setCounterEmphasis(true);
       window.setTimeout(() => setCounterEmphasis(false), 400);
     },
-    [celebrating]
+    [
+      audio,
+      celebrating,
+      challenge.count,
+      countedSet,
+      registerInteraction,
+      touchCount,
+    ]
   );
 
   const handleAnswer = useCallback(
     (choice: number) => {
       if (celebrating || !allCounted) return;
 
+      registerInteraction();
+
       if (choice === challenge.count) {
         setCelebrating(true);
-        playCelebrationSound();
+        audio.playSuccess();
+        audio.playGoodJob();
+        const celebrationMs = isLastChallenge
+          ? reducedMotion
+            ? FINAL_CELEBRATION_MS_REDUCED
+            : FINAL_CELEBRATION_MS
+          : reducedMotion
+            ? CLAP_CELEBRATION_MS_REDUCED
+            : CLAP_CELEBRATION_MS;
         window.setTimeout(() => {
           onComplete();
-        }, reducedMotion ? CLAP_CELEBRATION_MS_REDUCED : CLAP_CELEBRATION_MS);
+        }, celebrationMs);
         return;
       }
 
+      audio.playRetry();
       setNudgeAnswers(true);
       window.setTimeout(() => setNudgeAnswers(false), 500);
     },
-    [allCounted, celebrating, challenge.count, onComplete, reducedMotion]
+    [
+      allCounted,
+      audio,
+      celebrating,
+      challenge.count,
+      isLastChallenge,
+      onComplete,
+      reducedMotion,
+      registerInteraction,
+    ]
   );
 
   return (
@@ -126,7 +200,7 @@ function CountingChallengeView({
         <div className="flex flex-1 flex-col gap-4">
           <div className="flex flex-col items-center gap-3 text-center sm:flex-row sm:justify-center sm:gap-8">
             <motion.div
-              key={allCounted ? "how-many" : "touch-each"}
+              key={`${allCounted ? "how-many" : "touch-each"}-${instructionVisualKey}`}
               initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
               animate={{ opacity: celebrating ? 0 : 1, y: 0 }}
               transition={adventureTransition.normal}
@@ -138,10 +212,13 @@ function CountingChallengeView({
             </motion.div>
 
             {!celebrating ? (
-              <TouchCountCounter
-                count={touchCount}
-                emphasize={counterEmphasis}
-              />
+              <div className="flex flex-wrap items-center justify-center gap-4">
+                <TouchCountCounter
+                  count={touchCount}
+                  emphasize={counterEmphasis}
+                />
+                <HearAgainButton onPress={hearAgain} />
+              </div>
             ) : null}
           </div>
 
@@ -159,7 +236,7 @@ function CountingChallengeView({
                   index={index}
                   layout={layouts[index]}
                   counted={countedSet.has(index)}
-                  showIdleHint={showTapHint}
+                  showIdleHint={showTapHint || replayTapHints}
                   celebrating={celebrating}
                   onTap={handleObjectTap}
                 />
