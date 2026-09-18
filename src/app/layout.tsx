@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Fredoka } from "next/font/google";
+import { AudioRuntime } from "@/components/audio/audio-runtime";
 import { ADVENTURE_APP_NAME } from "@/lib/design-tokens";
 import "./globals.css";
 
@@ -24,6 +25,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${fredoka.variable} h-full antialiased`}>
       <body className="adventure-play-root min-h-full flex flex-col">
+        <AudioRuntime />
         {children}
       </body>
     </html>

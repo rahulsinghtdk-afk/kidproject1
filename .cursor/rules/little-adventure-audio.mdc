@@ -1,0 +1,143 @@
+---
+alwaysApply: true
+description: Little Adventure audio — centralized playback, voice/SFX/music channels, sensory-safe feedback
+---
+
+# Little Adventure — Audio
+
+Audio is part of the **interaction model**, not decoration. Pair with [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc), [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc), and [architecture.mdc](mdc:.cursor/rules/architecture.mdc).
+
+Every audio decision must prioritize: **clarity**, **predictability**, **sensory friendliness**, **gentle positive reinforcement**, **low cognitive load**, and **consistent behavior across games**. The child should feel like they are **playing**, not being tested.
+
+## Design philosophy
+
+Calm, playful, sensory-friendly audio language.
+
+**Avoid:** loud sounds, sudden spikes, harsh errors, alarms, buzzers, negative/failure sounds, excessive voice, rapid repeats, constant musical changes, game-show energy, audio that competes with instructions.
+
+**Never** shame or punish with audio. No “wrong”, “failed”, or “game over” audio states.
+
+## Channels
+
+Treat as separate channels (independent volume control later):
+
+1. Background music  
+2. Voice  
+3. Sound effects  
+4. Transition / celebration  
+
+Do not hard-code one global volume for all audio.
+
+## Voice
+
+- **Language:** English only.  
+- **Personality:** young/kid-like, friendly, clear, natural, not babyish; calm for instructions, cheerier on success, more energetic on major celebrations (still sensory-friendly).  
+- **Length:** concise; no unnecessary speech.
+
+### Instructions
+
+1. Speak once.  
+2. If no interaction after a short delay, repeat **once**.  
+3. Do not auto-repeat again.  
+4. Child can use **Hear Again**.
+
+### Hear Again
+
+Replay instruction, associated visual cue, gentle character/target animation. No extra explanatory speech unless required.
+
+## Spoken feedback
+
+Do **not** say “Great!”, “Nice!”, “Well done!” after every individual action — use **SFX** instead. Speech is for meaningful moments.
+
+| Moment | Copy |
+|--------|------|
+| Challenge complete | “Good Job!” |
+| Final game complete | “Good Job, [Child Name]!” — name from **config/data**, not hard-coded in games |
+| Incorrect | “Try again!” (gentle). Never “Wrong!”, “No!”, buzzers |
+
+## Successful action sound
+
+Default concept: soft **“ting”** — short, pleasant, soft, positive, non-startling.
+
+- Normal success: single soft ting.  
+- Final required action: slightly richer variant of the **same** sound, not dramatically louder.  
+- One interaction sound unless explicitly requested otherwise.
+
+## Background music
+
+One gentle Little Adventure theme across games; may continue across screens; short transition stings on major changes. Warm, playful, calm, light, reassuring. Never loud, aggressive, fast, dramatic, or competing with voice.
+
+## Voice ducking
+
+When voice starts: music **ducks** (default: strong), smooth return after speech. Implement **centrally** — games do not roll their own ducking. Ducking amount configurable for future parent settings.
+
+## Child audio control
+
+Child UI exposes only: **Audio ON/OFF**.
+
+Do **not** expose music/voice/effects volume, ducking, or advanced settings in child UI (future parent settings).
+
+When OFF: mute/stop all audio; keep visuals/animations; **persist** preference.
+
+## State and persistence
+
+Use the app’s existing persistence pattern — not component-only state. Consistent after navigation, challenge changes, home, refresh, session restart.
+
+## Celebration audio
+
+**Challenge complete:** complete action → special completion sound → “Good Job!” → small celebration → short pause → auto-advance (child can tap Next immediately).
+
+**Final complete:** complete action → special sound → “Good Job, [Name]!” → slightly longer celebration → final completion screen.
+
+Use character celebration, few stars/bubbles, short cheerful jingle. Avoid large confetti, flashing, rapid movement, loud bursts, excessive particles.
+
+## Priority (when competing)
+
+1. Voice instruction  
+2. Important feedback  
+3. Success / completion  
+4. Interaction SFX  
+5. Background music  
+
+Voice must stay understandable.
+
+## Architecture
+
+**Do not** ad-hoc `new Audio(...)` in game components or duplicate audio state per game.
+
+Use a **centralized** service/hook/provider matching existing architecture. Games request **semantic** events only, e.g.:
+
+- `playInstruction(...)`, `playHearAgain(...)`, `playSuccess()`, `playFinalSuccess()`, `playRetry()`, `playInteraction()`, `playTransition()`, `startMusic()`, `stopMusic()`
+
+## Assets
+
+Central location; semantic names (`interaction-soft.mp3`, `success.mp3`, `game-theme.mp3`). Avoid `sound1.mp3`, `test.mp3`. Maintain an **asset registry**.
+
+## Library
+
+Prefer a dedicated browser audio library (not scattered `HTMLAudioElement`) behind the audio service: mobile/tablet, Web Audio, preload, loop, volume, fade, simultaneous sounds, sprites where useful, reliable post-gesture playback. App code stays decoupled from the library API.
+
+## Browser / mobile
+
+Unlock audio from an appropriate **user interaction**; do not assume autoplay before interaction. Test desktop Chrome, mobile/tablet Safari and Chrome.
+
+## Performance
+
+Small SFX; preload frequent short effects; lazy-load large music/voice; efficient formats; avoid duplicate instances. Do not over-preload at the cost of responsiveness.
+
+## Sensory safety
+
+Before adding sound: necessary? useful? softer than voice? startling? annoying on repeat? competing with important audio? If not meaningful, skip it.
+
+## Future parent settings
+
+Architecture should support (UI only when requested): music/voice/effects enable, per-channel volume, ducking level, transition audio, etc.
+
+## When modifying games
+
+- Preserve existing interaction logic unless asked to change it.  
+- Wire audio through the **centralized** system only.  
+- Do not redesign UX while adding audio unless requested.  
+- No oversized generic framework — small, testable implementation.
+
+**Before finishing audio work:** lint, typecheck, build if practical; no audio console errors; no repeat playback from React re-renders; verify preference persistence.
