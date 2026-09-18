@@ -9,8 +9,7 @@ type CelebrationEffectsFrameProps = {
 };
 
 /**
- * Upper celebration zone — effects are positioned relative to this frame
- * so the scene feels full without decorating the Next area.
+ * Tall celebration zone — fills upper/middle play area; keeps Next region clean.
  */
 function CelebrationEffectsFrame({
   className,
@@ -19,8 +18,8 @@ function CelebrationEffectsFrame({
   return (
     <div
       className={cn(
-        "pointer-events-none absolute left-1/2 top-[2%] h-[min(62%,30rem)] w-[min(96%,32rem)] -translate-x-1/2 overflow-visible",
-        "sm:top-[3%] sm:h-[min(64%,31rem)] sm:w-[min(94%,34rem)]",
+        "pointer-events-none absolute left-1/2 top-0 h-[min(88%,44rem)] w-[min(98%,38rem)] -translate-x-1/2 overflow-visible",
+        "sm:h-[min(90%,46rem)] sm:w-[min(98%,40rem)]",
         className
       )}
     >

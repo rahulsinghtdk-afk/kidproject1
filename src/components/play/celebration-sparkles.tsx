@@ -17,19 +17,20 @@ type SparkleSpec = {
   sizePx: number;
   rotate: number;
   entranceIndex: number;
+  twinkleDuration: number;
 };
 
 const SPARKLES: SparkleSpec[] = [
-  { left: "18%", top: "8%", kind: "four", color: "var(--adventure-celebration-gold-sparkle)", sizePx: 22, rotate: -12, entranceIndex: 0 },
-  { left: "38%", top: "4%", kind: "five", color: "var(--adventure-celebration-gold)", sizePx: 18, rotate: 8, entranceIndex: 1 },
-  { left: "62%", top: "4%", kind: "four", color: "var(--adventure-celebration-gold-sparkle)", sizePx: 20, rotate: 10, entranceIndex: 2 },
-  { left: "82%", top: "8%", kind: "diamond", color: "var(--adventure-celebration-bubble-sky)", sizePx: 14, rotate: 45, entranceIndex: 3 },
-  { left: "26%", top: "16%", kind: "five", color: "var(--adventure-celebration-gold-light)", sizePx: 16, rotate: -6, entranceIndex: 4 },
-  { left: "74%", top: "15%", kind: "four", color: "var(--adventure-celebration-gold-sparkle)", sizePx: 21, rotate: 14, entranceIndex: 5 },
-  { left: "32%", top: "52%", kind: "diamond", color: "var(--adventure-celebration-bubble-pink)", sizePx: 13, rotate: 0, entranceIndex: 6 },
-  { left: "68%", top: "51%", kind: "five", color: "var(--adventure-celebration-gold)", sizePx: 17, rotate: -10, entranceIndex: 7 },
-  { left: "44%", top: "58%", kind: "four", color: "var(--adventure-celebration-gold-sparkle)", sizePx: 19, rotate: 6, entranceIndex: 8 },
-  { left: "56%", top: "62%", kind: "diamond", color: "var(--adventure-celebration-bubble-violet)", sizePx: 12, rotate: 45, entranceIndex: 9 },
+  { left: "14%", top: "10%", kind: "four", color: "var(--adventure-celebration-gold-sparkle)", sizePx: 24, rotate: -12, entranceIndex: 0, twinkleDuration: 2.6 },
+  { left: "36%", top: "5%", kind: "five", color: "var(--adventure-celebration-gold)", sizePx: 20, rotate: 8, entranceIndex: 1, twinkleDuration: 3.1 },
+  { left: "64%", top: "5%", kind: "four", color: "var(--adventure-celebration-gold-sparkle)", sizePx: 22, rotate: 10, entranceIndex: 2, twinkleDuration: 2.9 },
+  { left: "86%", top: "10%", kind: "diamond", color: "var(--adventure-celebration-bubble-sky)", sizePx: 16, rotate: 45, entranceIndex: 3, twinkleDuration: 3.4 },
+  { left: "24%", top: "20%", kind: "five", color: "var(--adventure-celebration-gold-light)", sizePx: 18, rotate: -6, entranceIndex: 4, twinkleDuration: 2.8 },
+  { left: "76%", top: "19%", kind: "four", color: "var(--adventure-celebration-gold-sparkle)", sizePx: 23, rotate: 14, entranceIndex: 5, twinkleDuration: 3.2 },
+  { left: "28%", top: "52%", kind: "diamond", color: "var(--adventure-celebration-bubble-pink)", sizePx: 15, rotate: 0, entranceIndex: 6, twinkleDuration: 3.5 },
+  { left: "72%", top: "51%", kind: "five", color: "var(--adventure-celebration-gold)", sizePx: 19, rotate: -10, entranceIndex: 7, twinkleDuration: 2.7 },
+  { left: "42%", top: "62%", kind: "four", color: "var(--adventure-celebration-gold-sparkle)", sizePx: 21, rotate: 6, entranceIndex: 8, twinkleDuration: 3 },
+  { left: "58%", top: "66%", kind: "diamond", color: "var(--adventure-celebration-bubble-violet)", sizePx: 14, rotate: 45, entranceIndex: 9, twinkleDuration: 3.3 },
 ];
 
 function SparkleShape({
@@ -41,7 +42,7 @@ function SparkleShape({
   color: string;
   sizePx: number;
 }) {
-  const glow = `drop-shadow(0 0 6px color-mix(in srgb, ${color} 55%, transparent))`;
+  const glow = `drop-shadow(0 0 8px color-mix(in srgb, ${color} 60%, transparent))`;
 
   if (kind === "five") {
     return (
@@ -129,7 +130,7 @@ function CelebrationSparkles({ className }: CelebrationSparklesProps) {
                 ? { opacity: 0.95, scale: 1 }
                 : {
                     opacity: [0.55, 1, 0.65, 0.95],
-                    scale: [0.85, 1.15, 0.92, 1.08],
+                    scale: [0.85, 1.18, 0.92, 1.1],
                   }
             }
             transition={
@@ -142,7 +143,7 @@ function CelebrationSparkles({ className }: CelebrationSparklesProps) {
                       ease: CELEBRATION_COMPOSITION_EASE,
                     },
                     scale: {
-                      duration: 2.8,
+                      duration: sparkle.twinkleDuration,
                       delay: entranceDelay + 0.12,
                       repeat: Infinity,
                       repeatType: "reverse",

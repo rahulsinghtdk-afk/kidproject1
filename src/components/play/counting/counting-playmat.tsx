@@ -27,6 +27,36 @@ const playmatTint: Record<
     hill: "bg-adventure-green/30",
     speck: "bg-adventure-green/50",
   },
+  flower: {
+    sky: "from-adventure-secondary/32 via-adventure-surface-elevated/90 to-adventure-orange/22",
+    hill: "bg-adventure-secondary/30",
+    speck: "bg-adventure-secondary/50",
+  },
+  butterfly: {
+    sky: "from-adventure-primary/28 via-adventure-surface-elevated/90 to-adventure-secondary/35",
+    hill: "bg-adventure-primary/26",
+    speck: "bg-adventure-primary/45",
+  },
+  strawberry: {
+    sky: "from-adventure-orange/30 via-adventure-surface-elevated/90 to-adventure-secondary/25",
+    hill: "bg-adventure-orange/28",
+    speck: "bg-adventure-orange/48",
+  },
+  fish: {
+    sky: "from-adventure-primary/35 via-adventure-surface-elevated/90 to-adventure-green/28",
+    hill: "bg-adventure-primary/24",
+    speck: "bg-adventure-primary/42",
+  },
+  car: {
+    sky: "from-adventure-orange/26 via-adventure-surface-elevated/90 to-adventure-green/30",
+    hill: "bg-adventure-orange/26",
+    speck: "bg-adventure-green/45",
+  },
+  cake: {
+    sky: "from-adventure-secondary/28 via-adventure-surface-elevated/90 to-adventure-orange/32",
+    hill: "bg-adventure-secondary/28",
+    speck: "bg-adventure-orange/50",
+  },
 };
 
 type CountingPlaymatProps = {

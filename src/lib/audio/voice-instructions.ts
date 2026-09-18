@@ -9,6 +9,12 @@ const COUNT_TOUCH_EACH_VOICE: Record<CountingObjectKind, string> = {
   star: AUDIO_ASSET_PATHS.voice.countTouchEachStar,
   balloon: AUDIO_ASSET_PATHS.voice.countTouchEachBalloon,
   ball: AUDIO_ASSET_PATHS.voice.countTouchEachBall,
+  flower: AUDIO_ASSET_PATHS.voice.countTouchEachFlower,
+  butterfly: AUDIO_ASSET_PATHS.voice.countTouchEachButterfly,
+  strawberry: AUDIO_ASSET_PATHS.voice.countTouchEachStrawberry,
+  fish: AUDIO_ASSET_PATHS.voice.countTouchEachFish,
+  car: AUDIO_ASSET_PATHS.voice.countTouchEachCar,
+  cake: AUDIO_ASSET_PATHS.voice.countTouchEachCake,
 };
 
 /** One clip per object kind — matches on-screen "Touch each {label}". */

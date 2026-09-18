@@ -57,8 +57,8 @@ function CountingChallengeView({
   const audio = useAudio();
   const emoji = COUNTING_OBJECT_EMOJI[challenge.objectKind];
   const layouts = useMemo(
-    () => getObjectLayout(challenge.count),
-    [challenge.count]
+    () => challenge.positions ?? getObjectLayout(challenge.count),
+    [challenge.count, challenge.positions]
   );
   const answerChoices = useMemo(
     () => shuffledAnswerChoices(challenge.choices, challenge.id),

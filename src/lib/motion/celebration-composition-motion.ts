@@ -8,5 +8,5 @@ export const CELEBRATION_ENTRANCE_SEC = {
   sparkleStart: 0.2,
   sparkleStagger: 0.05,
   bubbleStart: 0.42,
-  bubbleStagger: 0.08,
+  bubbleStagger: 0.035,
 } as const;
