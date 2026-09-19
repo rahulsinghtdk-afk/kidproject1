@@ -63,3 +63,8 @@ export function clickHereToProceedInstruction(): InstructionAudioRef {
 export function wantMoreInstruction(): InstructionAudioRef {
   return { src: AUDIO_ASSET_PATHS.voice.wantMore };
 }
+
+/** Home screen — invites the child to tap Play. */
+export function pressPlayToEnterGameZoneInstruction(): InstructionAudioRef {
+  return { src: AUDIO_ASSET_PATHS.voice.pressPlay };
+}

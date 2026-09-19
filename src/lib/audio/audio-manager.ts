@@ -56,6 +56,7 @@ class AudioManager {
   private musicDuckActive = false;
   private effectHowls = new Map<string, ManagedHowl>();
   private voiceHowl: ManagedHowl | null = null;
+  private voiceHowlSrc: string | null = null;
   private voicePlaying = false;
   private lastInstruction: InstructionAudioRef | null = null;
   private unsubscribeMaster: (() => void) | null = null;
@@ -234,6 +235,14 @@ class AudioManager {
     }
     this.unlockFromUserGesture();
     this.playVoiceClip(this.lastInstruction.src, { restart: true });
+  }
+
+  /** Preload a voice clip so the first instruction plays with minimal delay. */
+  warmVoiceClip(src: string): void {
+    if (!this.canPlay()) {
+      return;
+    }
+    void this.ensureVoiceHowl(src);
   }
 
   playFinalSuccess(childName?: string, options?: { finalAdventure?: boolean }): void {
@@ -602,9 +611,13 @@ class AudioManager {
     if (!mod) {
       return null;
     }
+    if (this.voiceHowl && this.voiceHowlSrc === src) {
+      return this.voiceHowl;
+    }
     if (this.voiceHowl) {
       this.voiceHowl.unload();
       this.voiceHowl = null;
+      this.voiceHowlSrc = null;
     }
     this.voiceHowl = new mod.Howl({
       src: [src],
@@ -615,6 +628,7 @@ class AudioManager {
         /* assets not added yet */
       },
     });
+    this.voiceHowlSrc = src;
     return this.voiceHowl;
   }
 

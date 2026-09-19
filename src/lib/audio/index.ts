@@ -18,6 +18,7 @@ export {
   countHowManyInstruction,
   countTouchEachInstruction,
   helpAFriendRequestInstruction,
+  pressPlayToEnterGameZoneInstruction,
   wantMoreInstruction,
 } from "./voice-instructions";
 export { getAudioManager } from "./audio-manager";

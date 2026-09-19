@@ -63,6 +63,8 @@ export const AUDIO_ASSET_PATHS = {
     clickHereToProceed: "/audio/voice/click-here-to-proceed.mp3",
     /** Generic clip: "Well Done! Do you want more?" (name shown on screen only). */
     wantMore: "/audio/voice/want-more.mp3",
+    /** Home — "Press Play to enter the game zone." */
+    pressPlay: "/audio/voice/press-play.mp3",
   },
   effects: {
     interaction: "/audio/effects/interaction-ting.mp3",

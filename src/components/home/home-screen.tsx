@@ -1,12 +1,15 @@
 "use client";
 
 import { ChildHeading, ChildShell, MusicButton } from "@/components/child";
+import { useHomePlayGuidance } from "@/hooks/use-home-play-guidance";
 import { HomeAdventureBackdrop } from "./home-adventure-backdrop";
 import { HomeCharacter } from "./home-character";
 import { HomePlayButton } from "./home-play-button";
 import { ParentCornerButton } from "./parent-corner-button";
 
 function HomeScreen() {
+  const { guidanceActive, cancelGuidance } = useHomePlayGuidance();
+
   return (
     <ChildShell
       className="min-h-dvh"
@@ -29,7 +32,10 @@ function HomeScreen() {
             <ChildHeading level={1} className="text-balance landscape:text-[length:var(--adventure-text-2xl)]">
               Ready to play?
             </ChildHeading>
-            <HomePlayButton />
+            <HomePlayButton
+              attentionActive={guidanceActive}
+              onPlayPress={cancelGuidance}
+            />
           </div>
 
           <HomeCharacter className="landscape:shrink-0" />
