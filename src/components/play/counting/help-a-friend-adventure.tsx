@@ -5,18 +5,17 @@ import { HomeAdventureBackdrop } from "@/components/home/home-adventure-backdrop
 import { ChildShell } from "@/components/child";
 import { HELP_A_FRIEND_CHALLENGES } from "@/data/counting/help-a-friend/challenges";
 import { AdventureCompleteScreen } from "./adventure-complete-screen";
-import { AdventureIntroScreen } from "./adventure-intro-screen";
 import { HelpAFriendChallengeView } from "./help-a-friend-challenge-view";
 import { PlayBackHomeButton } from "@/components/play/play-back-home-button";
 
-type PlayPhase = "intro" | "challenge" | "complete";
+type PlayPhase = "challenge" | "complete";
 
 type HelpAFriendAdventureProps = {
   onExitToPicker: () => void;
 };
 
 function HelpAFriendAdventure({ onExitToPicker }: HelpAFriendAdventureProps) {
-  const [phase, setPhase] = useState<PlayPhase>("intro");
+  const [phase, setPhase] = useState<PlayPhase>("challenge");
   const [challengeIndex, setChallengeIndex] = useState(0);
 
   const handleChallengeComplete = useCallback(() => {
@@ -26,16 +25,6 @@ function HelpAFriendAdventure({ onExitToPicker }: HelpAFriendAdventureProps) {
     }
     setChallengeIndex((index) => index + 1);
   }, [challengeIndex]);
-
-  if (phase === "intro") {
-    return (
-      <AdventureIntroScreen
-        onStart={() => setPhase("challenge")}
-        title="Help a Friend"
-        description="Give your friend what they ask for."
-      />
-    );
-  }
 
   if (phase === "complete") {
     return <AdventureCompleteScreen onPlayAgain={onExitToPicker} />;

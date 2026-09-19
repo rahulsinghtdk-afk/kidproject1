@@ -12,33 +12,25 @@ import {
   type CountAndChooseSessionState,
 } from "@/lib/counting/count-and-choose-session";
 import { AdventureCompleteScreen } from "./adventure-complete-screen";
-import { AdventureIntroScreen } from "./adventure-intro-screen";
 import { CountChooseWantMoreScreen } from "./count-choose-want-more-screen";
 import { CountingChallengeView } from "./counting-challenge-view";
 import { PlayBackHomeButton } from "@/components/play/play-back-home-button";
 
-type PlayPhase = "intro" | "challenge" | "want-more" | "complete";
+type PlayPhase = "challenge" | "want-more" | "complete";
 
 type CountAndChooseAdventureProps = {
   onExitToPicker: () => void;
 };
 
 function CountAndChooseAdventure({ onExitToPicker }: CountAndChooseAdventureProps) {
-  const [phase, setPhase] = useState<PlayPhase>("intro");
+  const [phase, setPhase] = useState<PlayPhase>("challenge");
   const [challengeIndex, setChallengeIndex] = useState(0);
-  const [sessionState, setSessionState] = useState<CountAndChooseSessionState>(
-    () => createCountAndChooseSessionState()
+  const [sessionState] = useState<CountAndChooseSessionState>(() =>
+    createCountAndChooseSessionState()
   );
   const [hasAskedMoreQuestion, setHasAskedMoreQuestion] = useState(false);
 
   const sessionChallengeCount = COUNT_AND_CHOOSE_SESSION_CHALLENGE_COUNT;
-
-  const beginSession = useCallback(() => {
-    setChallengeIndex(0);
-    setHasAskedMoreQuestion(false);
-    setSessionState(createCountAndChooseSessionState());
-    setPhase("challenge");
-  }, []);
 
   const handleChallengeComplete = useCallback(() => {
     if (challengeIndex >= sessionChallengeCount - 1) {
@@ -70,16 +62,6 @@ function CountAndChooseAdventure({ onExitToPicker }: CountAndChooseAdventureProp
     setHasAskedMoreQuestion(true);
     setPhase("complete");
   }, []);
-
-  if (phase === "intro") {
-    return (
-      <AdventureIntroScreen
-        onStart={beginSession}
-        title="Count & Choose"
-        description="Touch each one, then pick the number."
-      />
-    );
-  }
 
   if (phase === "complete") {
     return <AdventureCompleteScreen onPlayAgain={onExitToPicker} />;
