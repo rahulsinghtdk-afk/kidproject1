@@ -116,8 +116,8 @@ function CountingPlaymat({
         aria-hidden
       />
 
-      <div className="relative z-10 h-full min-h-[inherit] px-[8%] py-[10%]">
-        <div className="relative mx-auto h-full min-h-[min(40vh,18rem)] w-full max-w-xl landscape:min-h-[min(36vh,16rem)]">
+      <div className="relative z-10 h-full min-h-[inherit] px-[5%] py-[8%]">
+        <div className="relative h-full min-h-[min(40vh,18rem)] w-full landscape:min-h-[min(36vh,16rem)]">
           {children}
         </div>
       </div>

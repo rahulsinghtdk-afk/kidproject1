@@ -30,13 +30,13 @@ export const COUNT_CHOOSE_SCATTER_5_BALLOONS: ObjectLayoutPoint[] = [
   { left: "68%", top: "76%" },
 ];
 
-/** Five flowers — asymmetric loose cluster. */
+/** Five flowers — wide scatter across the playmat. */
 export const COUNT_CHOOSE_CLUSTER_5_FLOWERS: ObjectLayoutPoint[] = [
-  { left: "38%", top: "35%" },
-  { left: "62%", top: "42%" },
-  { left: "28%", top: "55%" },
-  { left: "55%", top: "68%" },
-  { left: "72%", top: "52%" },
+  { left: "14%", top: "16%" },
+  { left: "86%", top: "18%" },
+  { left: "50%", top: "42%" },
+  { left: "16%", top: "78%" },
+  { left: "84%", top: "76%" },
 ];
 
 /** Six butterflies — spaced for individual taps. */
@@ -72,17 +72,17 @@ export const COUNT_CHOOSE_SCATTER_8: ObjectLayoutPoint[] = [
   { left: "85%", top: "78%" },
 ];
 
-/** Nine cars — wide scatter with room to tap each object (no overlapping targets). */
+/** Nine cars — 3×3 grid with tap spacing across the full playmat. */
 export const COUNT_CHOOSE_SCATTER_9: ObjectLayoutPoint[] = [
-  { left: "19%", top: "17%" },
-  { left: "51%", top: "13%" },
-  { left: "81%", top: "21%" },
-  { left: "17%", top: "44%" },
-  { left: "48%", top: "51%" },
-  { left: "83%", top: "47%" },
-  { left: "27%", top: "73%" },
-  { left: "56%", top: "79%" },
-  { left: "77%", top: "71%" },
+  { left: "12%", top: "14%" },
+  { left: "50%", top: "12%" },
+  { left: "88%", top: "15%" },
+  { left: "13%", top: "48%" },
+  { left: "50%", top: "50%" },
+  { left: "87%", top: "47%" },
+  { left: "12%", top: "82%" },
+  { left: "50%", top: "84%" },
+  { left: "88%", top: "80%" },
 ];
 
 /** Ten cakes (cupcakes) — three bands (4 / 3 / 3) with clear tap spacing. */
