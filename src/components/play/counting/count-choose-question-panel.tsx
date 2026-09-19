@@ -120,12 +120,7 @@ function CountChooseQuestionPanel({
             ))}
           </motion.div>
         </motion.div>
-      ) : (
-        <div
-          className="mx-auto min-h-[5.5rem] w-full max-w-lg rounded-[var(--adventure-radius-2xl)] border-2 border-dashed border-adventure-border/50 bg-[color-mix(in_srgb,var(--adventure-secondary)_6%,var(--adventure-surface))]"
-          aria-hidden
-        />
-      )}
+      ) : null}
     </div>
   );
 }

@@ -4,7 +4,13 @@ import { useCallback, useState } from "react";
 import { HomeAdventureBackdrop } from "@/components/home/home-adventure-backdrop";
 import { ChildShell } from "@/components/child";
 import { COUNT_AND_CHOOSE_CHALLENGES } from "@/data/counting/count-and-choose/challenges";
-import { pickWantMoreInsertionIndex } from "@/lib/counting/count-and-choose-want-more";
+import {
+  COUNT_AND_CHOOSE_SESSION_CHALLENGE_COUNT,
+  countAndChooseChallengeWithQuantity,
+  countAndChooseSessionQuantity,
+  createCountAndChooseSessionState,
+  type CountAndChooseSessionState,
+} from "@/lib/counting/count-and-choose-session";
 import { AdventureCompleteScreen } from "./adventure-complete-screen";
 import { AdventureIntroScreen } from "./adventure-intro-screen";
 import { CountChooseWantMoreScreen } from "./count-choose-want-more-screen";
@@ -20,29 +26,39 @@ type CountAndChooseAdventureProps = {
 function CountAndChooseAdventure({ onExitToPicker }: CountAndChooseAdventureProps) {
   const [phase, setPhase] = useState<PlayPhase>("intro");
   const [challengeIndex, setChallengeIndex] = useState(0);
-  const [questionInsertionIndex, setQuestionInsertionIndex] = useState(
-    () => pickWantMoreInsertionIndex()
+  const [sessionState, setSessionState] = useState<CountAndChooseSessionState>(
+    () => createCountAndChooseSessionState()
   );
   const [hasAskedMoreQuestion, setHasAskedMoreQuestion] = useState(false);
+
+  const sessionChallengeCount = COUNT_AND_CHOOSE_SESSION_CHALLENGE_COUNT;
 
   const beginSession = useCallback(() => {
     setChallengeIndex(0);
     setHasAskedMoreQuestion(false);
-    setQuestionInsertionIndex(pickWantMoreInsertionIndex());
+    setSessionState(createCountAndChooseSessionState());
     setPhase("challenge");
   }, []);
 
   const handleChallengeComplete = useCallback(() => {
-    if (challengeIndex >= COUNT_AND_CHOOSE_CHALLENGES.length - 1) {
+    if (challengeIndex >= sessionChallengeCount - 1) {
       setPhase("complete");
       return;
     }
-    if (!hasAskedMoreQuestion && challengeIndex === questionInsertionIndex) {
+    if (
+      !hasAskedMoreQuestion &&
+      challengeIndex === sessionState.wantMoreAfterIndex
+    ) {
       setPhase("want-more");
       return;
     }
     setChallengeIndex((index) => index + 1);
-  }, [challengeIndex, hasAskedMoreQuestion, questionInsertionIndex]);
+  }, [
+    challengeIndex,
+    hasAskedMoreQuestion,
+    sessionChallengeCount,
+    sessionState.wantMoreAfterIndex,
+  ]);
 
   const handleWantMoreYes = useCallback(() => {
     setHasAskedMoreQuestion(true);
@@ -73,14 +89,22 @@ function CountAndChooseAdventure({ onExitToPicker }: CountAndChooseAdventureProp
     return (
       <CountChooseWantMoreScreen
         challengeIndex={challengeIndex}
-        totalChallenges={COUNT_AND_CHOOSE_CHALLENGES.length}
+        totalChallenges={sessionChallengeCount}
         onChooseYes={handleWantMoreYes}
         onChooseNo={handleWantMoreNo}
       />
     );
   }
 
-  const challenge = COUNT_AND_CHOOSE_CHALLENGES[challengeIndex];
+  const challengeTemplate = COUNT_AND_CHOOSE_CHALLENGES[challengeIndex];
+  const sessionQuantity = countAndChooseSessionQuantity(
+    sessionState,
+    challengeIndex
+  );
+  const challenge =
+    sessionQuantity === undefined
+      ? challengeTemplate
+      : countAndChooseChallengeWithQuantity(challengeTemplate, sessionQuantity);
 
   return (
     <ChildShell
@@ -97,10 +121,8 @@ function CountAndChooseAdventure({ onExitToPicker }: CountAndChooseAdventureProp
           key={challenge.id}
           challenge={challenge}
           challengeIndex={challengeIndex}
-          totalChallenges={COUNT_AND_CHOOSE_CHALLENGES.length}
-          isLastChallenge={
-            challengeIndex >= COUNT_AND_CHOOSE_CHALLENGES.length - 1
-          }
+          totalChallenges={sessionChallengeCount}
+          isLastChallenge={challengeIndex >= sessionChallengeCount - 1}
           onComplete={handleChallengeComplete}
         />
       </div>

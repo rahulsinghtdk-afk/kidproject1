@@ -21,13 +21,13 @@ export const COUNT_CHOOSE_SCATTER_4: ObjectLayoutPoint[] = [
   { left: "70%", top: "70%" },
 ];
 
-/** Five balloons — mixed vertical / horizontal scatter. */
+/** Five balloons — corners + center, full playmat width for separate taps. */
 export const COUNT_CHOOSE_SCATTER_5_BALLOONS: ObjectLayoutPoint[] = [
-  { left: "50%", top: "22%" },
-  { left: "24%", top: "46%" },
-  { left: "76%", top: "44%" },
-  { left: "32%", top: "74%" },
-  { left: "68%", top: "76%" },
+  { left: "16%", top: "18%" },
+  { left: "84%", top: "20%" },
+  { left: "50%", top: "42%" },
+  { left: "18%", top: "76%" },
+  { left: "82%", top: "74%" },
 ];
 
 /** Five flowers — wide scatter across the playmat. */
