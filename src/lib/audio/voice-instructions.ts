@@ -58,3 +58,8 @@ export function countAndChooseTouchPhaseInstruction(
 export function clickHereToProceedInstruction(): InstructionAudioRef {
   return { src: AUDIO_ASSET_PATHS.voice.clickHereToProceed };
 }
+
+/** Count & Choose session checkpoint — generic voice (display name is visual only). */
+export function wantMoreInstruction(): InstructionAudioRef {
+  return { src: AUDIO_ASSET_PATHS.voice.wantMore };
+}

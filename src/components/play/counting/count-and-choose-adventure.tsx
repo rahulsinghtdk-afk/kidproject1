@@ -4,12 +4,14 @@ import { useCallback, useState } from "react";
 import { HomeAdventureBackdrop } from "@/components/home/home-adventure-backdrop";
 import { ChildShell } from "@/components/child";
 import { COUNT_AND_CHOOSE_CHALLENGES } from "@/data/counting/count-and-choose/challenges";
+import { pickWantMoreInsertionIndex } from "@/lib/counting/count-and-choose-want-more";
 import { AdventureCompleteScreen } from "./adventure-complete-screen";
 import { AdventureIntroScreen } from "./adventure-intro-screen";
+import { CountChooseWantMoreScreen } from "./count-choose-want-more-screen";
 import { CountingChallengeView } from "./counting-challenge-view";
 import { PlayBackHomeButton } from "@/components/play/play-back-home-button";
 
-type PlayPhase = "intro" | "challenge" | "complete";
+type PlayPhase = "intro" | "challenge" | "want-more" | "complete";
 
 type CountAndChooseAdventureProps = {
   onExitToPicker: () => void;
@@ -18,19 +20,45 @@ type CountAndChooseAdventureProps = {
 function CountAndChooseAdventure({ onExitToPicker }: CountAndChooseAdventureProps) {
   const [phase, setPhase] = useState<PlayPhase>("intro");
   const [challengeIndex, setChallengeIndex] = useState(0);
+  const [questionInsertionIndex, setQuestionInsertionIndex] = useState(
+    () => pickWantMoreInsertionIndex()
+  );
+  const [hasAskedMoreQuestion, setHasAskedMoreQuestion] = useState(false);
+
+  const beginSession = useCallback(() => {
+    setChallengeIndex(0);
+    setHasAskedMoreQuestion(false);
+    setQuestionInsertionIndex(pickWantMoreInsertionIndex());
+    setPhase("challenge");
+  }, []);
 
   const handleChallengeComplete = useCallback(() => {
     if (challengeIndex >= COUNT_AND_CHOOSE_CHALLENGES.length - 1) {
       setPhase("complete");
       return;
     }
+    if (!hasAskedMoreQuestion && challengeIndex === questionInsertionIndex) {
+      setPhase("want-more");
+      return;
+    }
     setChallengeIndex((index) => index + 1);
-  }, [challengeIndex]);
+  }, [challengeIndex, hasAskedMoreQuestion, questionInsertionIndex]);
+
+  const handleWantMoreYes = useCallback(() => {
+    setHasAskedMoreQuestion(true);
+    setChallengeIndex((index) => index + 1);
+    setPhase("challenge");
+  }, []);
+
+  const handleWantMoreNo = useCallback(() => {
+    setHasAskedMoreQuestion(true);
+    setPhase("complete");
+  }, []);
 
   if (phase === "intro") {
     return (
       <AdventureIntroScreen
-        onStart={() => setPhase("challenge")}
+        onStart={beginSession}
         title="Count & Choose"
         description="Touch each one, then pick the number."
       />
@@ -39,6 +67,17 @@ function CountAndChooseAdventure({ onExitToPicker }: CountAndChooseAdventureProp
 
   if (phase === "complete") {
     return <AdventureCompleteScreen onPlayAgain={onExitToPicker} />;
+  }
+
+  if (phase === "want-more") {
+    return (
+      <CountChooseWantMoreScreen
+        challengeIndex={challengeIndex}
+        totalChallenges={COUNT_AND_CHOOSE_CHALLENGES.length}
+        onChooseYes={handleWantMoreYes}
+        onChooseNo={handleWantMoreNo}
+      />
+    );
   }
 
   const challenge = COUNT_AND_CHOOSE_CHALLENGES[challengeIndex];

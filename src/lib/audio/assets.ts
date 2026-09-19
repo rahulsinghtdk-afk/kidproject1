@@ -61,6 +61,8 @@ export const AUDIO_ASSET_PATHS = {
     giveMe4Stars: "/audio/voice/give-me-4-stars.mp3",
     giveMe3Balls: "/audio/voice/give-me-3-balls.mp3",
     clickHereToProceed: "/audio/voice/click-here-to-proceed.mp3",
+    /** Generic clip: "Well Done! Do you want more?" (name shown on screen only). */
+    wantMore: "/audio/voice/want-more.mp3",
   },
   effects: {
     interaction: "/audio/effects/interaction-ting.mp3",
