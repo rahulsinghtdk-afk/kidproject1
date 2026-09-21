@@ -36,8 +36,8 @@ export function useAudio() {
   }, [manager]);
 
   const playInstruction = useCallback(
-    (ref: InstructionAudioRef) => {
-      manager.playInstruction(ref);
+    (ref: InstructionAudioRef, options?: { onEnd?: () => void }) => {
+      manager.playInstruction(ref, options);
     },
     [manager]
   );

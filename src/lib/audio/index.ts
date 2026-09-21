@@ -19,6 +19,12 @@ export {
   countTouchEachInstruction,
   helpAFriendRequestInstruction,
   pressPlayToEnterGameZoneInstruction,
+  walkThroughWeekEventInstruction,
+  walkThroughWeekTapToMoveForwardInstruction,
+  walkThroughWeekThisIsInstruction,
+  walkThroughWeekTodayInstruction,
+  walkThroughWeekTodayTomorrowInstruction,
+  walkThroughWeekTomorrowInstruction,
   wantMoreInstruction,
 } from "./voice-instructions";
 export { getAudioManager } from "./audio-manager";

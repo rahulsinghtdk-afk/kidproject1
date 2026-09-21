@@ -140,6 +140,28 @@
       var(--adventure-surface)
     );
   }
+
+  /** Walk Through the Week — voice playing; card not tappable yet. */
+  .adventure-wtw-card-voice-waiting {
+    border-color: color-mix(
+      in srgb,
+      var(--adventure-celebration-bubble-pink) 65%,
+      #d9534f
+    );
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--adventure-celebration-bubble-pink) 45%, transparent),
+      0 0 24px color-mix(in srgb, var(--adventure-celebration-bubble-pink) 38%, transparent),
+      var(--adventure-shadow-md);
+  }
+
+  /** Walk Through the Week — voice finished; ready for child tap. */
+  .adventure-wtw-card-voice-ready {
+    border-color: var(--adventure-success);
+    box-shadow:
+      0 0 0 4px color-mix(in srgb, var(--adventure-success) 50%, transparent),
+      0 0 22px color-mix(in srgb, var(--adventure-success) 40%, transparent),
+      var(--adventure-shadow-md);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

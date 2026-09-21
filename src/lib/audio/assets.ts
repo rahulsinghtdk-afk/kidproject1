@@ -65,6 +65,53 @@ export const AUDIO_ASSET_PATHS = {
     wantMore: "/audio/voice/want-more.mp3",
     /** Home — "Press Play to enter the game zone." */
     pressPlay: "/audio/voice/press-play.mp3",
+    /** Walk Through the Week — "Today is [day]." (one clip per weekday). */
+    walkThroughWeekTodaySunday: "/audio/voice/wtw-today-sunday.mp3",
+    walkThroughWeekTodayMonday: "/audio/voice/wtw-today-monday.mp3",
+    walkThroughWeekTodayTuesday: "/audio/voice/wtw-today-tuesday.mp3",
+    walkThroughWeekTodayWednesday: "/audio/voice/wtw-today-wednesday.mp3",
+    walkThroughWeekTodayThursday: "/audio/voice/wtw-today-thursday.mp3",
+    walkThroughWeekTodayFriday: "/audio/voice/wtw-today-friday.mp3",
+    walkThroughWeekTodaySaturday: "/audio/voice/wtw-today-saturday.mp3",
+    /** Walk Through the Week — "Tap to move forward." */
+    walkThroughWeekTapToMoveForward:
+      "/audio/voice/wtw-tap-to-move-forward.mp3",
+    /** Walk Through the Week — "Today we …" event lines (independent of weekday). */
+    walkThroughWeekEventSchool: "/audio/voice/wtw-event-school.mp3",
+    walkThroughWeekEventChaiShop: "/audio/voice/wtw-event-chai-shop.mp3",
+    walkThroughWeekEventCake: "/audio/voice/wtw-event-cake.mp3",
+    walkThroughWeekEventPark: "/audio/voice/wtw-event-park.mp3",
+    /** Walk Through the Week — "This is [day]." (one clip per weekday). */
+    walkThroughWeekThisIsSunday: "/audio/voice/wtw-this-is-sunday.mp3",
+    walkThroughWeekThisIsMonday: "/audio/voice/wtw-this-is-monday.mp3",
+    walkThroughWeekThisIsTuesday: "/audio/voice/wtw-this-is-tuesday.mp3",
+    walkThroughWeekThisIsWednesday: "/audio/voice/wtw-this-is-wednesday.mp3",
+    walkThroughWeekThisIsThursday: "/audio/voice/wtw-this-is-thursday.mp3",
+    walkThroughWeekThisIsFriday: "/audio/voice/wtw-this-is-friday.mp3",
+    walkThroughWeekThisIsSaturday: "/audio/voice/wtw-this-is-saturday.mp3",
+    /** Walk Through the Week — "Today is [day]. Tomorrow is [next day]." (one per real today). */
+    walkThroughWeekTodayTomorrowSunday:
+      "/audio/voice/wtw-today-tomorrow-sunday.mp3",
+    walkThroughWeekTodayTomorrowMonday:
+      "/audio/voice/wtw-today-tomorrow-monday.mp3",
+    walkThroughWeekTodayTomorrowTuesday:
+      "/audio/voice/wtw-today-tomorrow-tuesday.mp3",
+    walkThroughWeekTodayTomorrowWednesday:
+      "/audio/voice/wtw-today-tomorrow-wednesday.mp3",
+    walkThroughWeekTodayTomorrowThursday:
+      "/audio/voice/wtw-today-tomorrow-thursday.mp3",
+    walkThroughWeekTodayTomorrowFriday:
+      "/audio/voice/wtw-today-tomorrow-friday.mp3",
+    walkThroughWeekTodayTomorrowSaturday:
+      "/audio/voice/wtw-today-tomorrow-saturday.mp3",
+    /** Walk Through the Week — "Tomorrow is [day]." (tomorrow teaching step). */
+    walkThroughWeekTomorrowSunday: "/audio/voice/wtw-tomorrow-sunday.mp3",
+    walkThroughWeekTomorrowMonday: "/audio/voice/wtw-tomorrow-monday.mp3",
+    walkThroughWeekTomorrowTuesday: "/audio/voice/wtw-tomorrow-tuesday.mp3",
+    walkThroughWeekTomorrowWednesday: "/audio/voice/wtw-tomorrow-wednesday.mp3",
+    walkThroughWeekTomorrowThursday: "/audio/voice/wtw-tomorrow-thursday.mp3",
+    walkThroughWeekTomorrowFriday: "/audio/voice/wtw-tomorrow-friday.mp3",
+    walkThroughWeekTomorrowSaturday: "/audio/voice/wtw-tomorrow-saturday.mp3",
   },
   effects: {
     interaction: "/audio/effects/interaction-ting.mp3",

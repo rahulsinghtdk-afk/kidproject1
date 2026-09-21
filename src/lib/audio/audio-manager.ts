@@ -55,8 +55,10 @@ class AudioManager {
   private musicPlaying = false;
   private musicDuckActive = false;
   private effectHowls = new Map<string, ManagedHowl>();
-  private voiceHowl: ManagedHowl | null = null;
-  private voiceHowlSrc: string | null = null;
+  /** Preloaded voice clips keyed by src — avoids unload/reload races when chaining. */
+  private voiceHowls = new Map<string, ManagedHowl>();
+  private activeVoiceHowl: ManagedHowl | null = null;
+  private voicePlaybackGeneration = 0;
   private voicePlaying = false;
   private lastInstruction: InstructionAudioRef | null = null;
   private unsubscribeMaster: (() => void) | null = null;
@@ -180,9 +182,8 @@ class AudioManager {
     if (this.unlocked) {
       return true;
     }
-    this.unlockFromUserGesture();
     if (!this.unlockPromise) {
-      return false;
+      this.unlockPromise = this.performUnlock();
     }
     await this.unlockPromise;
     return this.unlocked;
@@ -223,10 +224,13 @@ class AudioManager {
     this.playEffect("transition");
   }
 
-  playInstruction(ref: InstructionAudioRef): void {
+  playInstruction(
+    ref: InstructionAudioRef,
+    options?: VoicePlaybackOptions
+  ): void {
     this.unlockFromUserGesture();
     this.lastInstruction = ref;
-    this.playVoiceClip(ref.src, { restart: true });
+    this.playVoiceClip(ref.src, { restart: true, onEnd: options?.onEnd });
   }
 
   replayInstruction(): void {
@@ -242,6 +246,7 @@ class AudioManager {
     if (!this.canPlay()) {
       return;
     }
+    this.unlockFromUserGesture();
     void this.ensureVoiceHowl(src);
   }
 
@@ -384,8 +389,8 @@ class AudioManager {
     if (this.musicHowl && this.musicPlaying) {
       this.musicHowl.volume(this.effectiveMusicVolume());
     }
-    if (this.voiceHowl) {
-      this.voiceHowl.volume(this.config.channels.voice.volume);
+    for (const howl of this.voiceHowls.values()) {
+      howl.volume(this.config.channels.voice.volume);
     }
     for (const howl of this.effectHowls.values()) {
       howl.volume(this.config.channels.effects.volume);
@@ -581,29 +586,81 @@ class AudioManager {
         return;
       }
 
-      this.duckMusicForVoice();
-      howl.stop();
-      howl.volume(this.config.channels.voice.volume);
-      this.voicePlaying = true;
+      const generation = ++this.voicePlaybackGeneration;
 
-      howl.once("end", () => {
-        this.voicePlaying = false;
-        this.restoreMusicAfterVoice();
-        options?.onEnd?.();
-      });
-      howl.once("stop", () => {
-        if (!howl.playing()) {
-          this.voicePlaying = false;
-          this.restoreMusicAfterVoice();
+      const beginPlayback = () => {
+        if (generation !== this.voicePlaybackGeneration) {
+          return;
         }
-      });
-      howl.once("loaderror", () => {
+
+        if (this.activeVoiceHowl && this.activeVoiceHowl !== howl) {
+          this.activeVoiceHowl.stop();
+        }
+        this.activeVoiceHowl = howl;
+
+        this.duckMusicForVoice();
+        howl.stop();
+        howl.volume(this.config.channels.voice.volume);
+        this.voicePlaying = true;
+
+        howl.once("end", () => {
+          if (generation !== this.voicePlaybackGeneration) {
+            return;
+          }
+          this.voicePlaying = false;
+          if (this.activeVoiceHowl === howl) {
+            this.activeVoiceHowl = null;
+          }
+          this.restoreMusicAfterVoice();
+          options?.onEnd?.();
+        });
+        howl.once("stop", () => {
+          if (!howl.playing() && generation === this.voicePlaybackGeneration) {
+            this.voicePlaying = false;
+            this.restoreMusicAfterVoice();
+          }
+        });
+        howl.once("loaderror", () => {
+          if (generation !== this.voicePlaybackGeneration) {
+            return;
+          }
+          this.voicePlaying = false;
+          if (this.activeVoiceHowl === howl) {
+            this.activeVoiceHowl = null;
+          }
+          this.restoreMusicAfterVoice();
+        });
+
+        howl.play();
+      };
+
+      this.runWhenVoiceHowlReady(howl, beginPlayback, () => {
+        if (generation !== this.voicePlaybackGeneration) {
+          return;
+        }
         this.voicePlaying = false;
         this.restoreMusicAfterVoice();
       });
-
-      howl.play();
     });
+  }
+
+  private runWhenVoiceHowlReady(
+    howl: ManagedHowl,
+    onReady: () => void,
+    onLoadError?: () => void
+  ): void {
+    const state = howl.state();
+    if (state === "loaded") {
+      onReady();
+      return;
+    }
+    howl.once("load", onReady);
+    if (onLoadError) {
+      howl.once("loaderror", onLoadError);
+    }
+    if (state === "unloaded") {
+      howl.load();
+    }
   }
 
   private async ensureVoiceHowl(src: string): Promise<ManagedHowl | null> {
@@ -611,30 +668,28 @@ class AudioManager {
     if (!mod) {
       return null;
     }
-    if (this.voiceHowl && this.voiceHowlSrc === src) {
-      return this.voiceHowl;
+    const cached = this.voiceHowls.get(src);
+    if (cached) {
+      return cached;
     }
-    if (this.voiceHowl) {
-      this.voiceHowl.unload();
-      this.voiceHowl = null;
-      this.voiceHowlSrc = null;
-    }
-    this.voiceHowl = new mod.Howl({
+    const howl = new mod.Howl({
       src: [src],
       preload: true,
       volume: this.config.channels.voice.volume,
       html5: true,
       onloaderror: () => {
-        /* assets not added yet */
+        /* missing asset */
       },
     });
-    this.voiceHowlSrc = src;
-    return this.voiceHowl;
+    this.voiceHowls.set(src, howl);
+    return howl;
   }
 
   private stopVoice(): void {
-    if (this.voiceHowl) {
-      this.voiceHowl.stop();
+    this.voicePlaybackGeneration += 1;
+    if (this.activeVoiceHowl) {
+      this.activeVoiceHowl.stop();
+      this.activeVoiceHowl = null;
     }
     this.voicePlaying = false;
     this.restoreMusicAfterVoice();
