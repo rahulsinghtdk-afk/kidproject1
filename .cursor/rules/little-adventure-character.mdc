@@ -1,0 +1,73 @@
+---
+alwaysApply: true
+description: Canonical Little Adventure child character — LittleAdventureCharacter, shell vs figure, boundaries with game/audio/celebration
+---
+
+# Little Adventure — Canonical character
+
+Pair with [architecture.mdc](mdc:.cursor/rules/architecture.mdc), [visual-design.mdc](mdc:.cursor/rules/visual-design.mdc), [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc), [little-adventure-celebration-progression.mdc](mdc:.cursor/rules/little-adventure-celebration-progression.mdc), [little-adventure-audio.mdc](mdc:.cursor/rules/little-adventure-audio.mdc), [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc), and [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc).
+
+## One canonical character
+
+Little Adventure has **one** canonical child-facing character.
+
+All new child-facing experiences should render that character through:
+
+**`LittleAdventureCharacter`**
+
+(`src/components/character/little-adventure-character.tsx`)
+
+Do **not** add new one-off character SVGs, per-game mascots, or independent companion components.
+
+Temporary compatibility wrappers (e.g. **`HomeCharacter`**, **`PlayCompanionCharacter`**) may remain where needed for safe migration; new code should prefer **`LittleAdventureCharacter`** directly when practical.
+
+In celebration and guidance copy elsewhere in the rules, **“mascot”** means this same canonical character unless explicitly scoped otherwise.
+
+## Character architecture
+
+Keep two concerns separate:
+
+1. **Character shell** — layout, sizing presets, mood-driven motion, reduced-motion behavior, className integration.
+2. **Character figure** — the visual artwork (today: inline SVG inside the shared component).
+
+The figure should be **replaceable later** (e.g. illustration asset) without rewriting game logic, challenge views, or screen-level orchestration.
+
+Extend the shared component via **props and narrow presentation contracts** (mood, size, clapping, etc.), not duplicate character trees in individual games.
+
+## What the character component must NOT own
+
+**`LittleAdventureCharacter`** is presentational. It must **not** own:
+
+- Game or challenge logic
+- Success / failure / retry logic
+- Celebration state machine or progression (Next, guidance, timers)
+- Audio playback or semantic audio requests
+- Session engine or challenge selection
+
+Those stay in their existing hooks, services, screens, and celebration systems. Screens pass **presentation props** (e.g. mood, clapping); they do not embed business rules inside the character.
+
+## Illustration direction
+
+Production **mood illustrations** (PNG in `public/character/`) are the approved character look. The figure implementation may still include non-production fallbacks for development; child-facing paths should use production art.
+
+Do **not** embed the character inside **environment illustration assets** — character and environment are separate layers composited at the screen.
+
+Do **not** build a visual asset registry or visual asset system as part of character work unless explicitly requested (audio asset registry rules remain separate).
+
+## Character ↔ illustrated environment
+
+When screens use illustrated environment assets ([little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc)):
+
+- Environment specs must reserve **placement, scale, ground contact, lighting, and ~10–15° 3/4 orientation** compatible with production poses (especially **guiding**).
+- Shell sizing and scene composition align the figure to the environment; the character component does **not** own scene layout rules.
+- Face, gesture, and backpack remain **unobstructed**; the character must read as standing **in** the world, not on a flat panel.
+
+## Sensory-friendly motion
+
+Character motion must follow [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc): calm, purposeful, short, predictable; honor **`prefers-reduced-motion`**.
+
+Celebration choreography may coordinate with the character visually, but **progression timing and child action** remain defined in [little-adventure-celebration-progression.mdc](mdc:.cursor/rules/little-adventure-celebration-progression.mdc).
+
+## Character in the world
+
+When scenes add environment and props ([little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc)), this component stays the **same identity** (clothing, backpack, proportions). Screens compose **`LittleAdventureCharacter`** inside world layers; the character shell handles sizing and mood motion — not scene layout, prop logic, or ground placement rules (those belong in world/scene composition outside this component).

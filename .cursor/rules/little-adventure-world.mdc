@@ -1,0 +1,298 @@
+---
+description: Little Adventure World — environment, props, context, layers, composition, hierarchy, interaction, motion (design rules; no scene engine)
+alwaysApply: false
+---
+
+# Little Adventure World
+
+Pair with [visual-design.mdc](mdc:.cursor/rules/visual-design.mdc) (Soft Adventure tokens and shape language), [little-adventure-character.mdc](mdc:.cursor/rules/little-adventure-character.mdc) (canonical character), [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc), [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc), [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc), [little-adventure-celebration-progression.mdc](mdc:.cursor/rules/little-adventure-celebration-progression.mdc), [little-adventure-audio.mdc](mdc:.cursor/rules/little-adventure-audio.mdc), and [architecture.mdc](mdc:.cursor/rules/architecture.mdc).
+
+This document defines **reusable visual and design rules** for gradually enriching child-facing screens with world context. It is **not** a scene engine, asset registry, or CMS. Individual environment **artwork** specs may live in `docs/design/` when product defines them.
+
+**Visual coherence is more important than implementation convenience.** Choose the representation that best preserves the approved illustrated language and child-facing quality while keeping architecture simple.
+
+---
+
+## 1. Core principle
+
+The child experience is composed of:
+
+**CHARACTER + ILLUSTRATED ENVIRONMENT + MEANINGFUL PROPS + INTERACTION LAYER + EXISTING LEARNING UI**
+
+(Plus day / real-life context, gentle interaction, and subtle motion where appropriate.)
+
+The environment helps the child understand **where** the activity happens and **what** is going on. It must **not** become decorative noise.
+
+Without reading instructions, a well-composed scene should answer:
+
+- **Where am I?**
+- **What is happening?**
+- **What can I touch?**
+
+**Learning clarity comes first.** World-building supports recognition and warmth; it must not compete with the task, choices, drag targets, or celebration hierarchy.
+
+---
+
+## 2. Character (unchanged identity)
+
+**`LittleAdventureCharacter`** remains the **only** child-facing character. See [little-adventure-character.mdc](mdc:.cursor/rules/little-adventure-character.mdc).
+
+The world system must **never**:
+
+- Create a separate mascot or scene-specific character
+- Change clothing, backpack, proportions, or visual identity per scene
+- Fork per-game companion art
+
+The **environment changes around the character**; the character does not become a different person for School, Chai Shop, Cake, Park, etc.
+
+Within a scene, the character may:
+
+- Use the existing **mood** system
+- **Respond** to interaction (presentation props from screens/hooks — not logic inside the character component)
+- **Move subtly** within the composition (placement, gentle motion via existing shell/motion patterns)
+
+Character implementation boundaries (no game logic, audio, or progression inside the character component) stay as defined in the character rule.
+
+---
+
+## 3. Environment language
+
+Environments should feel like **soft children’s picture-book illustrations** — **the same illustration family as production character art**, not geometric CSS/SVG scenery behind a polished character cutout.
+
+**Characteristics:** warm, simple, rounded, tactile, friendly, visually clear, layered but not busy, soft depth, limited detail, consistent perspective, consistent scale, consistent lighting, **shared softness and colour harmony with the character**.
+
+**Avoid:** photorealism, detailed realistic backgrounds, busy scenes, excessive gradients, neon colours, excessive decorative objects, visual clutter, classroom/corporate UI aesthetics, overly babyish illustrations, **flat icon-style buildings/paths used as the primary environment read**.
+
+### Illustrated environment assets (first-class)
+
+When a scene needs a **cohesive illustrated place**, the environment **may** be a **dedicated environment illustration asset** (e.g. raster WebP/PNG), not only CSS/SVG primitives.
+
+- The asset represents **environment only** (sky, ground, buildings, vegetation, path, ambient depth).
+- It must **not** include the canonical character, application UI, learning cards, labels, buttons, audio controls, navigation, or celebration elements.
+- It must **not** be a giant flattened screenshot of the whole screen.
+- The canonical character remains a **separate** production asset composited above (see [little-adventure-character.mdc](mdc:.cursor/rules/little-adventure-character.mdc)).
+
+**CSS/SVG** remain valid for **simple supporting elements** (page blend, minor accents, non-scene UI) but must **not** substitute for cohesive illustration when they **materially reduce** visual quality or coherence with the character.
+
+Environment artwork should be specified with **character placement, scale, ground contact, and perspective** in mind — not designed as wallpaper the character is pasted onto.
+
+### Scene layers (composition model)
+
+Compose screens with a consistent **back → front** stack:
+
+| Layer | Role |
+|-------|------|
+| **1. Environment** | Illustrated world / background (asset and/or minimal supporting markup) |
+| **2. Character** | Canonical **`LittleAdventureCharacter`** production artwork |
+| **3. Interaction objects** | Optional scene-specific tappable props (present or future) |
+| **4. Existing UI** | Learning, progression, TODAY, weekday strip, navigation, audio — React/UI |
+
+Within the environment illustration, use **background → midground → ground → subtle foreground** depth (see §4). Layers relate spatially with **one coherent perspective** and **one scale system**. The character sits **in** the world (see §6), not on an unrelated flat panel.
+
+Do not prescribe exact z-index or component names here.
+
+---
+
+## 4. Environment depth
+
+**Background:** distant, soft, low-detail, visually quiet.
+
+**Midground:** primary environmental read (“this is a school,” “this is a shop”) — simplified shapes, clear silhouettes.
+
+**Foreground:** interaction-ready objects — visually distinct, larger relative scale, enough contrast to discover. Foreground must **never** obscure the character or the **primary learning / interaction target**.
+
+Depth cues: soft overlap, gentle size falloff, light atmospheric quiet in the back — not stacked drop shadows, glass stacks, or harsh 3D realism (see [visual-design.mdc](mdc:.cursor/rules/visual-design.mdc)).
+
+---
+
+## 5. Props
+
+Every prop should have a **purpose**. Prefer **few meaningful props** over many decorations.
+
+| Category | Purpose |
+|----------|---------|
+| **Context prop** | Establishes where the child is |
+| **Interaction prop** | Something the child can touch or manipulate |
+| **Learning prop** | Directly supports the learning objective |
+| **Decorative prop** | Only when it strengthens the scene **without** clutter |
+
+Props use the same **Soft Adventure illustration language** as the character: rounded forms, clear silhouettes, simple colour blocks, limited detail, consistent perspective, child-friendly scale.
+
+Do **not** define prop libraries, registries, or shared prop components until implementation is explicitly requested.
+
+---
+
+## 6. Character ↔ environment relationship
+
+The character should feel **inside** the world, not pasted on a wallpaper.
+
+**Rules of thumb:**
+
+- **Ground placement:** feet (or logical base) align with the scene ground plane; no floating unless intentionally playful and still readable.
+- **Scale:** character scale stays consistent across scenes relative to doors, counters, trees, etc.
+- **Overlap:** midground may partially overlap character edges only when it aids depth; never hide face, hands needed for mood, or primary gesture.
+- **Depth:** character reads in front of midground context unless a deliberate foreground prop frames the action — foreground still must not block the learning target.
+- **Grounding:** optional soft shadow or ground contact — light, consistent, not heavy UI elevation.
+- **Spacing:** leave clear air around the character; scenery must not crowd or overpower.
+- **Environmental touch:** character may orient toward a prop or context, via placement and mood — not via alternate costumes or duplicate figures.
+
+The character remains one of the **strongest focal points**; scenery must not visually overpower him.
+
+---
+
+## 7. Context (day / real-life cues)
+
+Scenes communicate **real-world context** through visual cues, not long copy.
+
+**Examples only** (do not implement these scenes in rules or code until requested):
+
+| Context | Possible cues |
+|---------|----------------|
+| Monday → School | school building, entrance, sign, trees, path, backpack-adjacent context |
+| Friday → Chai Shop | small shop, counter, cups, sign, simple street |
+| Saturday → Cake | cake, table, simple home/celebration context |
+| Sunday → Park | trees, grass, path, simple play element |
+
+Product may add other days/events; cues stay **simple and readable** on tablet.
+
+Context data belongs in **content/config** when implemented ([architecture.mdc](mdc:.cursor/rules/architecture.mdc)), not hardcoded literals scattered in UI.
+
+---
+
+## 8. Interaction in the world
+
+Interaction should feel like **exploring the world**, not only answering a quiz.
+
+For tappable world objects:
+
+- Subtle **scale / pop** feedback; gentle movement allowed
+- Use **centralized audio** for meaningful feedback where appropriate ([little-adventure-audio.mdc](mdc:.cursor/rules/little-adventure-audio.mdc))
+- Follow [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc) and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc): no flashing, aggressive bounce, red error states, or “wrong” treatment
+- **Reward curiosity** when optional taps are intentional — pleasant response even outside a formal question
+
+**Do not** add arbitrary taps just to make a scene “interactive.” Every interaction needs a **clear purpose** (context, learning, or deliberate delight aligned with the activity).
+
+Formal challenge interactions (correct/incorrect, celebration, Next) remain governed by existing game, UI, and [little-adventure-celebration-progression.mdc](mdc:.cursor/rules/little-adventure-celebration-progression.mdc) rules — world rules do not change that behavior.
+
+---
+
+## 9. Motion in the world
+
+Motion makes the world feel **alive**, not distracting.
+
+**Allowed (examples):** gentle tree sway, subtle character breathing/float (existing patterns), small prop motion, soft floating elements, tiny environmental movement, character reacting to touch.
+
+**Avoid:** constant movement everywhere, rapid animation, flashing, looping high-energy motion, parallax that overloads, many objects moving at once.
+
+Honor **`prefers-reduced-motion`**: essential state stays visible without relying on ambient loops ([sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc)).
+
+Ambient world motion is **decoration with restraint**; play-loop motion stays **purposeful** (feedback, state, celebration).
+
+---
+
+## 10. Colour system
+
+**Foundation palette** (harmonize new environmental colours with these — do not replace with per-scene palettes):
+
+| Token role | Hex (reference) |
+|------------|-----------------|
+| Warm canvas / light background | `#FFF9F0` |
+| Sunny accent | `#FFD95A` |
+| Sky / calm blue | `#8DD8F7` |
+| Soft green | `#A8DFA8` |
+| Warm orange | `#FFB36B` |
+| Readable neutral (text/UI chrome where needed) | `#374151` |
+
+In implementation, prefer **project design tokens** over raw hex in components ([visual-design.mdc](mdc:.cursor/rules/visual-design.mdc)). Additional hues for props and environments must **harmonize** with this set.
+
+---
+
+## 11. Tablet-first composition
+
+**Primary:** tablet **portrait**. **Secondary:** landscape.
+
+**Rules (no fixed pixel layouts yet):**
+
+- **Safe margins** — keep interactive props and primary targets away from screen edges and system gestures
+- **Character placement** — stable, readable zone; not hidden under chrome or foreground clutter
+- **Interaction zones** — foreground props and challenge targets in thumb-friendly regions with ≥ **60px** effective touch where tappable ([child-experience.mdc](mdc:.cursor/rules/child-experience.mdc))
+- **Navigation** — do not overlap world art with back, audio, or other persistent controls; reserve clear space
+- **Hierarchy preserved** — world art fills space without turning the screen into a “find the button” puzzle
+
+---
+
+## 12. Visual hierarchy
+
+Default stacking of attention:
+
+1. **Child’s action / interaction target** (learning or primary tap)
+2. **`LittleAdventureCharacter`**
+3. **Important environmental context** (where / what)
+4. **Supporting props**
+5. **Decorative details**
+
+The scene must never become wallpaper where the child searches for what matters.
+
+During **celebration**, hierarchy follows [little-adventure-celebration-progression.mdc](mdc:.cursor/rules/little-adventure-celebration-progression.mdc) (Good Job → character → effects); world layers should **support**, not fight, that composition when both are visible.
+
+---
+
+## 13. Reusability without a scene engine
+
+Future places (School, Chai Shop, Cake, Park, etc.) should share this **visual language** and **art direction** — perspective, depth, lighting, scale, ground treatment, organic shapes, character/environment relationship — not reinvent a new style per day.
+
+**Do not** (unless explicitly requested):
+
+- Build a generic scene engine, world engine, or heavy visual framework
+- Introduce complex scene schemas, CMS, or large visual registries
+- Premature shared abstractions with only one consumer
+
+Supporting illustrated environments is **simple**: static assets + screen-level composition ([architecture.mdc](mdc:.cursor/rules/architecture.mdc)). Add narrow reuse when a **second real scene** repeats the same pattern.
+
+## 13A. Visual review
+
+For **major child-facing visual changes** (new environment artwork, scene composition swaps, character/environment integration), **review the actual rendered screen** on a tablet target (portrait first) before considering the work done. Coherence between character and environment is a acceptance criterion.
+
+---
+
+## 14. Accessibility / sensory friendliness
+
+All [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc) and [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc) principles apply to world layers.
+
+**No:** flashing, sudden visual changes, harsh transitions, excessive simultaneous motion, noisy decorative effects, visual overload.
+
+Important information (targets, character, context) stays **visually clear**; do not rely on colour alone for state ([sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc)).
+
+---
+
+## 15. Relationship to existing product layers
+
+Little Adventure World is a **visual layer** that gradually enriches the experience. It does **not** replace the product’s core systems.
+
+**Remain intact unless explicitly changed elsewhere:**
+
+- Typography and Soft Adventure child UI patterns
+- Navigation and routing
+- Centralized audio
+- Session engine and challenge logic
+- Buttons and child UI components
+- Celebration and child-guided progression
+- **`LittleAdventureCharacter`** architecture (shell vs figure)
+
+World art **complements** existing UI; the app must not feel like a different product overnight.
+
+---
+
+## Documented artwork specs
+
+Product-defined **environment artwork** specifications (e.g. Monday → School) live under `docs/design/` when created. Implementation follows those specs plus this rule; do not contradict celebration, audio, or character boundaries.
+
+## Intentionally unspecified (until product requests)
+
+- Component APIs, folder structure, and z-index implementation for each screen
+- Exact breakpoints beyond tablet-first principles
+- Visual asset registry or CMS
+- Optional ambient interactions per scene
+- Export pipeline and illustration tooling
+
+When implementation begins, read this rule together with the paired rules above and any relevant `docs/design/` spec.

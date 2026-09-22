@@ -5,7 +5,7 @@ description: Sensory-sensitive motion, audio, and feedback — calm, predictable
 
 # Sensory-friendly interaction
 
-Design for **sensory sensitivity** alongside play-first UX. Pair with [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc), [visual-design.mdc](mdc:.cursor/rules/visual-design.mdc), and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) when implementing child-facing UI.
+Design for **sensory sensitivity** alongside play-first UX. Pair with [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc), [visual-design.mdc](mdc:.cursor/rules/visual-design.mdc), [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc) (ambient world motion limits), and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) when implementing child-facing UI.
 
 ## Avoid
 
@@ -16,6 +16,8 @@ Design for **sensory sensitivity** alongside play-first UX. Pair with [child-exp
 - Loud error sounds or harsh alert tones
 - Excessive confetti, particle bursts, or stacked celebration effects
 - Constant background motion (parallax loops, always-on wiggling decorations, busy ambient animation)
+
+Illustrated **static** environment assets are preferred for calm scenes; if motion is added to world layers later, keep it **optional, subtle, and off** under reduced motion — same rules as above.
 
 ## Animations should be
 

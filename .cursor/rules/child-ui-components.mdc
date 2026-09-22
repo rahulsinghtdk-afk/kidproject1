@@ -4,7 +4,13 @@ alwaysApply: false
 ---
 # Child-facing UI implementation
 
-Applies when editing presentation layers for the **child play experience** (not parent/admin tools unless noted).
+Applies when editing presentation layers for the **child play experience** (not parent/admin tools unless noted). For the shared mascot, use [little-adventure-character.mdc](mdc:.cursor/rules/little-adventure-character.mdc) (`LittleAdventureCharacter`); do not add per-game character SVGs or duplicate companion components. For environment layers and tappable props, follow [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc) (touch targets, hierarchy, sensory-friendly tap feedback).
+
+## World vs UI
+
+- **Illustrated environments** belong to the **page** (full-bleed or natural band), not a nested “artwork card” with heavy frames or card-within-card chrome.
+- Learning cards, TODAY, weekday strip, and controls stay **existing React/UI** — do not bake them into environment artwork.
+- Prefer **illustrated environment assets** when CSS/SVG primitives would make the character feel pasted onto a diagram; use CSS/SVG only for simple supporting layout/blend when quality stays coherent.
 
 ## Touch and layout
 

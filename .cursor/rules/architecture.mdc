@@ -3,7 +3,7 @@ alwaysApply: true
 ---
 # Architecture
 
-Build the application as a **modular, reusable system**. Pair with [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc) for play UX and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) for child-facing UI implementation.
+Build the application as a **modular, reusable system**. Pair with [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc) for play UX, [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) for child-facing UI implementation, [little-adventure-character.mdc](mdc:.cursor/rules/little-adventure-character.mdc) for the canonical character, and [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc) for environment/props design boundaries.
 
 ## Page and component boundaries
 
@@ -27,9 +27,25 @@ Build the application as a **modular, reusable system**. Pair with [child-experi
 
 - **Avoid premature abstraction.** Introduce shared modules, base components, or generic engines only when reuse is **clear** (second real use case, or a stable contract the product already depends on).
 - When abstracting, prefer **narrow interfaces** (challenge type + content schema) over large “god” frameworks.
+- Do **not** introduce a generic game engine or heavy visual framework unless explicitly requested.
+
+## Separation of concerns
+
+Keep these boundaries explicit in design and implementation:
+
+- **Learning / game logic** — challenge rules, correctness, session engine
+- **Character implementation** — canonical `LittleAdventureCharacter` shell and figure (see [little-adventure-character.mdc](mdc:.cursor/rules/little-adventure-character.mdc))
+- **Visual assets** — character production art, optional **illustrated environment** art, and props consumed by UI; no ad-hoc per-game character art; environment assets must not embed character or application UI
+- **World / scene composition** — layered environment (illustration asset and/or simple markup), character, optional interaction props, then existing learning UI per [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc); presentational, composed by screens/views; must not become a generic scene engine or duplicate challenge/progression logic
+- **Audio** — centralized semantic playback ([little-adventure-audio.mdc](mdc:.cursor/rules/little-adventure-audio.mdc))
+- **Celebration / progression** — success flow, Good Job, Next, child-guided continue ([little-adventure-celebration-progression.mdc](mdc:.cursor/rules/little-adventure-celebration-progression.mdc))
+- **Screen / layout composition** — pages and views orchestrate wiring; they do not duplicate domain rules inside presentational children
+
+Presentational components (including the character) receive props and render; they do not own challenge or progression state.
 
 ## Practical checklist
 
 - New activity: add **content/config** + **challenge type** (or reuse existing type); page stays thin.
 - New interaction pattern: new challenge type + register with session engine; do not fork one-off page logic.
 - Business rules (correctness, progression, scoring if any) live **outside** presentational components.
+- New illustrated scene: follow `docs/design/` artwork specs when present; compose **environment asset + `LittleAdventureCharacter` + existing UI** without a scene engine; verify **rendered visual coherence** on tablet for major child-facing visual work.

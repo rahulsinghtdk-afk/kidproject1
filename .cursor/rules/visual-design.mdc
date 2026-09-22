@@ -1,11 +1,11 @@
 ---
 alwaysApply: true
-description: Soft Adventure visual identity — colours, typography, shape language, tokens, and shadcn boundaries for child vs parent UI
+description: Soft Adventure and Little Adventure World — colours, typography, shape language, tokens, character/world direction, shadcn boundaries
 ---
 
 # Visual design — Soft Adventure
 
-The visual identity is **Soft Adventure**. Pair this with [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc) (play UX) and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) (touch, feedback, implementation).
+The visual identity is **Soft Adventure**, evolving toward a cohesive **Little Adventure World**. Pair with [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc) (environment, props, layers, composition), [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc) (play UX), [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc) (touch, feedback, implementation), and [little-adventure-character.mdc](mdc:.cursor/rules/little-adventure-character.mdc) (canonical character).
 
 ## Child-facing UI should feel
 
@@ -53,6 +53,22 @@ The visual identity is **Soft Adventure**. Pair this with [child-experience.mdc]
 - **Child-facing UI must not look like a default shadcn/ui application** (neutral greys, tight radius, small text, dense layouts).
 - **shadcn/ui** is acceptable for **parent/guardian/admin** surfaces and for **functional primitives** behind the scenes.
 - **Child-facing components** should be **custom-designed** for Soft Adventure: rounded, tactile, illustration-friendly, token-driven.
+
+## Little Adventure World (direction)
+
+Over time, child-facing visuals should feel like one **inviting illustrated world**, not a loose stack of generic cards or **polished character on geometric CSS/SVG scenery**. Full design rules live in [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc): character + illustrated environment + props + interaction layer + existing learning UI, with a consistent depth model and tablet-first hierarchy.
+
+**Visual coherence** between character and environment (illustration language, softness, lighting, depth, colour harmony) is a product priority — **above** choosing CSS/SVG for implementation convenience.
+
+**Learning clarity comes first.** World-building supports the task; it must not compete with choices, targets, drag areas, or celebration focus.
+
+Environment palette harmonizes with Soft Adventure; world rule documents reference hex anchors — prefer **tokens** in code ([Colour and tokens](#colour-and-tokens) above) where UI applies; illustrated environments may use closely related natural colours in artwork. Do **not** build prop libraries, scene engines, or visual asset registries until explicitly requested.
+
+Cohesive scenes may use **dedicated environment illustration assets** (environment only — no character, no UI baked in). See [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc).
+
+## Character artwork
+
+Production character moods are **illustrated raster assets** behind **`LittleAdventureCharacter`** (shell + figure). Keep **one** canonical character component; swap or refine **figure** artwork without forking per-game mascots. Environment artwork is **separate** and composited beneath the character.
 
 ## Motion and depth (visual)
 

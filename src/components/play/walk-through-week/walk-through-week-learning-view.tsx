@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   ChildCard,
   ChildHeading,
@@ -26,13 +26,17 @@ import {
 } from "@/lib/motion/adventure-motion";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { WalkThroughWeekMondaySchoolScene } from "./walk-through-week-monday-school-scene";
 
 type WalkThroughWeekLearningViewProps = {
   currentWeekdayId: WeekdayId;
+  /** Presentation-only: toggles generic backdrop while Monday school scene is visible. */
+  onMondaySchoolSceneVisibleChange?: (visible: boolean) => void;
 };
 
 function WalkThroughWeekLearningView({
   currentWeekdayId,
+  onMondaySchoolSceneVisibleChange,
 }: WalkThroughWeekLearningViewProps) {
   const reducedMotion = useReducedMotion() ?? false;
   const audio = useAudio();
@@ -49,11 +53,17 @@ function WalkThroughWeekLearningView({
 
   const realTodayDay = getWeekdayEventDefaults(currentWeekdayId);
   const activeDay = getWeekdayEventDefaults(activeWeekdayId);
+  const showMondaySchoolScene =
+    activeWeekdayId === "monday" && activeDay.eventId === "school";
   const isTomorrowTeachingStep = walkStep === 1;
   const cycleComplete = isWalkCycleComplete(walkStep);
   const isOpeningToday =
     walkStep === 0 && activeWeekdayId === currentWeekdayId;
   const canTapToAdvance = canAdvanceWalk(walkStep) && isDayCardTapEnabled;
+
+  useEffect(() => {
+    onMondaySchoolSceneVisibleChange?.(showMondaySchoolScene);
+  }, [onMondaySchoolSceneVisibleChange, showMondaySchoolScene]);
 
   const handleDayCardTap = useCallback(() => {
     if (!isDayCardTapEnabled) {
@@ -88,12 +98,34 @@ function WalkThroughWeekLearningView({
 
   return (
     <motion.div
-      className="flex min-h-0 flex-1 flex-col items-center justify-center gap-8 py-4"
+      className={cn(
+        "flex min-h-0 w-full flex-1 flex-col items-center",
+        showMondaySchoolScene
+          ? "justify-between gap-3 py-1 pb-3 landscape:gap-2 landscape:py-0 landscape:pb-2"
+          : "justify-center gap-8 py-4"
+      )}
       initial={{ opacity: 0, y: reducedMotion ? 0 : 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={adventureTransition.slow}
     >
-      <div className="flex w-full max-w-lg flex-col items-center gap-6">
+      {showMondaySchoolScene ? (
+        <div
+          className={cn(
+            "flex min-h-[min(42dvh,21rem)] min-w-0 flex-1 flex-col",
+            "max-h-[min(54dvh,28rem)] landscape:min-h-[min(30dvh,13rem)] landscape:max-h-[min(42dvh,17rem)]",
+            "-mx-[max(1.25rem,env(safe-area-inset-left))] w-[calc(100%+max(1.25rem,env(safe-area-inset-left))+max(1.25rem,env(safe-area-inset-right)))]"
+          )}
+        >
+          <WalkThroughWeekMondaySchoolScene className="min-h-0 flex-1" />
+        </div>
+      ) : null}
+
+      <div
+        className={cn(
+          "flex w-full max-w-lg flex-col items-center gap-6",
+          showMondaySchoolScene && "shrink-0"
+        )}
+      >
         <ChildText size="label" className="tracking-wide uppercase">
           Today
         </ChildText>

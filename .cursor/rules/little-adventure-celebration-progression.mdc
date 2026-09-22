@@ -5,7 +5,7 @@ description: Celebration and child-guided progression rules for Little Adventure
 
 # Little Adventure — Celebration & Progression
 
-Pair with [little-adventure-audio.mdc](mdc:.cursor/rules/little-adventure-audio.mdc), [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc), [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc), [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc), and [architecture.mdc](mdc:.cursor/rules/architecture.mdc).
+Pair with [little-adventure-audio.mdc](mdc:.cursor/rules/little-adventure-audio.mdc), [child-experience.mdc](mdc:.cursor/rules/child-experience.mdc), [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc), [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc), [little-adventure-character.mdc](mdc:.cursor/rules/little-adventure-character.mdc), [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc) (world layers must not break celebration hierarchy), and [architecture.mdc](mdc:.cursor/rules/architecture.mdc).
 
 ## Core Principle
 

@@ -22,9 +22,11 @@ Work **incrementally**.
 1. Run the relevant **lint**, **typecheck**, and **build** commands.
 2. **Fix** errors introduced by the changes.
 3. **Verify** that existing functionality still works.
-4. **Summarize** what changed.
+4. For **major child-facing visual changes** (new environment artwork integration, scene composition, character/world layering), **review the actual rendered screen** (tablet portrait first) for visual coherence per [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc).
+5. **Summarize** what changed.
 
 ## Guardrails
 
 - Do **not** silently change architectural decisions or introduce new major dependencies.
 - If a requirement is ambiguous, prefer the **simplest** implementation consistent with the product specification.
+    
