@@ -288,6 +288,8 @@ Normal challenge progression should consistently be:
 
 Celebrate → Guide → Child taps → Continue.
 
+**Walk Through the Week landing / day screen is not a challenge.** Do **not** run Good Job, celebration particles, or a separate Next control there. After existing day/event voice and “Tap to move forward,” the **storybook Day/Event banner** becomes the continue target (gentle glow, child tap, existing walk progression). No auto-advance.
+
 ---
 
 ## 10. Audio Architecture

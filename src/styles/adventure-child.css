@@ -141,45 +141,89 @@
     );
   }
 
-  /** Walk Through the Week — storybook day/event sign (UI, not artwork). */
+  /**
+   * Walk Through the Week — storybook day/event sign (UI, not artwork).
+   * When `/environments/ui/walk-through-week-day-banner.png` ships, set on :root:
+   * --adventure-wtw-banner-plaque-image: url("/environments/ui/walk-through-week-day-banner.png");
+   * The plaque layer then covers this CSS fill; day/event text stays HTML.
+   */
   .adventure-wtw-storybook-banner {
-    border-radius: 2rem 2.25rem 1.65rem 2.1rem;
-    border: 2px solid color-mix(in srgb, var(--adventure-orange) 28%, var(--adventure-border));
+    position: relative;
+    isolation: isolate;
+    transform-origin: center center;
+    border-radius: 2.45rem 2.75rem 2.05rem 2.55rem;
+    border: 2px solid
+      color-mix(in srgb, var(--adventure-orange) 32%, var(--adventure-border-strong));
     background: linear-gradient(
       165deg,
-      var(--adventure-surface-elevated) 0%,
-      color-mix(in srgb, var(--adventure-background) 55%, var(--adventure-surface-elevated)) 100%
+      color-mix(in srgb, var(--adventure-primary) 38%, var(--adventure-surface-elevated))
+        0%,
+      color-mix(in srgb, var(--adventure-background) 72%, var(--adventure-orange)) 55%,
+      color-mix(in srgb, var(--adventure-orange) 22%, var(--adventure-background)) 100%
     );
     box-shadow:
-      0 3px 0 color-mix(in srgb, var(--adventure-orange) 18%, transparent),
-      var(--adventure-shadow-sm);
+      inset 0 1px 0 color-mix(in srgb, var(--adventure-surface-elevated) 85%, transparent),
+      0 4px 14px color-mix(in srgb, var(--adventure-text) 8%, transparent);
+    transition: box-shadow 0.45s var(--adventure-ease-out);
   }
 
-  /** Walk Through the Week — voice playing; card not tappable yet. */
-  .adventure-wtw-card-voice-waiting {
-    border-color: color-mix(
-      in srgb,
-      var(--adventure-celebration-bubble-pink) 65%,
-      #d9534f
-    );
-    box-shadow:
-      0 0 0 4px color-mix(in srgb, var(--adventure-celebration-bubble-pink) 45%, transparent),
-      0 0 24px color-mix(in srgb, var(--adventure-celebration-bubble-pink) 38%, transparent),
-      var(--adventure-shadow-md);
+  /** School world — banner tap target without card/glow chrome. */
+  .adventure-wtw-world-banner-tap {
+    border: none;
+    background: transparent;
+    box-shadow: none;
   }
 
-  /** Walk Through the Week — voice finished; ready for child tap. */
-  .adventure-wtw-card-voice-ready {
-    border-color: var(--adventure-success);
+  .adventure-wtw-storybook-banner--in-world {
+    backdrop-filter: none;
+  }
+
+  .adventure-wtw-storybook-banner--locked {
+    animation: none;
+  }
+
+  .adventure-wtw-storybook-banner--ready {
     box-shadow:
-      0 0 0 4px color-mix(in srgb, var(--adventure-success) 50%, transparent),
-      0 0 22px color-mix(in srgb, var(--adventure-success) 40%, transparent),
-      var(--adventure-shadow-md);
+      inset 0 1px 0 color-mix(in srgb, var(--adventure-surface-elevated) 85%, transparent),
+      0 4px 14px color-mix(in srgb, var(--adventure-text) 8%, transparent),
+      0 0 0 3px color-mix(in srgb, var(--adventure-celebration-gold) 45%, transparent),
+      0 0 18px color-mix(in srgb, var(--adventure-celebration-gold) 36%, transparent);
+    animation: adventure-wtw-banner-breathe 2.8s ease-in-out infinite;
+  }
+
+  .adventure-wtw-storybook-banner-plaque {
+    position: absolute;
+    inset: -6%;
+    z-index: 0;
+    background-image: var(--adventure-wtw-banner-plaque-image, none);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100% 100%;
+    pointer-events: none;
+  }
+
+  .adventure-wtw-storybook-banner-content {
+    position: relative;
+    z-index: 1;
+  }
+
+  .adventure-wtw-storybook-banner-event {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    padding: 0.3rem 1.05rem 0.4rem;
+    border-radius: var(--adventure-radius-full);
+    background: color-mix(in srgb, var(--adventure-surface-elevated) 55%, transparent);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .adventure-float {
+    animation: none !important;
+  }
+
+  .adventure-wtw-storybook-banner--ready {
     animation: none !important;
   }
 }
@@ -192,6 +236,16 @@
     }
     50% {
       transform: translateY(-4px);
+    }
+  }
+
+  @keyframes adventure-wtw-banner-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.03);
     }
   }
 

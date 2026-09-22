@@ -22,7 +22,7 @@ Work **incrementally**.
 1. Run the relevant **lint**, **typecheck**, and **build** commands.
 2. **Fix** errors introduced by the changes.
 3. **Verify** that existing functionality still works.
-4. For **major child-facing visual changes** (new environment artwork integration, scene composition, character/world layering, **Walk Through the Week** layout), **review the actual rendered screen** (tablet portrait first) for visual coherence per [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc) — including Today/weekday placement, storybook banner vs card treatment, and environment dominance.
+4. For **major child-facing visual changes** (new environment artwork integration, scene composition, character/world layering, **Walk Through the Week** layout), **review the actual rendered screen** (tablet portrait first) against approved references when present (e.g. `docs/design-references/walk-through-week/school-day-reference.png`) and [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc) — including Today/weekday placement, banner floating in-world, no white lesson card, and environment dominance.
 5. **Summarize** what changed.
 
 ## Guardrails

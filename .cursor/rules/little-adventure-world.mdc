@@ -128,8 +128,8 @@ The character should feel **inside** the world, not pasted on a wallpaper.
 
 **Rules of thumb:**
 
-- **Ground placement:** feet (or logical base) align with the scene ground plane; no floating unless intentionally playful and still readable.
-- **Scale:** character scale stays consistent across scenes relative to doors, counters, trees, etc.
+- **Ground placement:** feet (or logical base) align with the scene ground plane; no floating unless intentionally playful and still readable. Walk Through the Week School: character stands **on the sandy path** (lower-left of the road, not in foreground vegetation).
+- **Scale:** character scale stays consistent across scenes relative to doors, counters, trees, etc. Walk Through the Week School: about **25–30% of usable scene height** — a meaningful foreground companion, not a tiny corner decoration.
 - **Overlap:** midground may partially overlap character edges only when it aids depth; never hide face, hands needed for mood, or primary gesture.
 - **Depth:** character reads in front of midground context unless a deliberate foreground prop frames the action — foreground still must not block the learning target.
 - **Grounding:** optional soft shadow or ground contact — light, consistent, not heavy UI elevation.
@@ -169,6 +169,8 @@ For tappable world objects:
 - Use **centralized audio** for meaningful feedback where appropriate ([little-adventure-audio.mdc](mdc:.cursor/rules/little-adventure-audio.mdc))
 - Follow [sensory-friendly-interaction.mdc](mdc:.cursor/rules/sensory-friendly-interaction.mdc) and [child-ui-components.mdc](mdc:.cursor/rules/child-ui-components.mdc): no flashing, aggressive bounce, red error states, or “wrong” treatment
 - **Reward curiosity** when optional taps are intentional — pleasant response even outside a formal question
+
+**Walk Through the Week day/event banner** may be the **forward interaction target** on the landing/day screen (no separate Next on that screen). It is **not** a conventional button or dashboard card. Readiness is a **soft warm glow** and a very slow breathe (~1.0 → 1.03 → 1.0) **after** “Tap to move forward” finishes — never flashing, neon, arrows, or “CLICK ME.” Locked while voice plays: visible, calm, not tappable. Tap uses existing WTW progression + interaction sound — **not** the challenge celebration / Good Job flow.
 
 **Do not** add arbitrary taps just to make a scene “interactive.” Every interaction needs a **clear purpose** (context, learning, or deliberate delight aligned with the activity).
 
@@ -283,56 +285,84 @@ World art **complements** existing UI; the app must not feel like a different pr
 
 ---
 
-## 16. Walk Through the Week — illustrated world (not card-based lessons)
+## 16. Walk Through the Week — illustrated storybook world (not lesson cards)
 
-**Walk Through the Week is an illustrated world experience, not a card-based lesson screen.**
+**Principle:** Walk Through the Week should feel like **entering an illustrated storybook world**, not viewing a lesson card.
 
-The screen should read as **one cohesive children’s adventure scene**, not “illustration → large white information card.” Composition combines:
+The screen reads as **one coherent illustrated scene**. The **environment is the primary visual canvas**. The **canonical character** is a foreground participant **in** that world. The **day/event title** is a storybook contextual sign **floating within** the world. **Today** and the **weekday selector** are lightweight navigation in the upper sky area. **Home** and **Audio** stay small utility controls.
 
-1. Illustrated environment (dominant)
-2. Canonical **`LittleAdventureCharacter`**
-3. Dynamic day/event UI (real HTML text)
-4. Gentle **storybook title** treatment for the active day/event
-5. Existing interaction and progression (tap to move forward, voice, weekday walk — unchanged by this visual model)
+**Canonical visual reference (composition quality bar):** `docs/design-references/walk-through-week/school-day-reference.png` — hierarchy, scale, spacing, character prominence, banner prominence, environment dominance, character → path → destination. The reference is **design-only**; never ship it as runtime background or flatten layers into one image.
 
-### Environment vs UI (non-negotiable)
+### Runtime layers (non-negotiable)
 
-- Environment artwork remains a **pure environment asset** (no character, no app UI, no baked dynamic text).
-- **Day names, Today, event names, Home, Audio, weekday strip, progression taps** remain **application UI**.
-- UI may **overlay** or sit **naturally above** the illustrated band while staying technically separate from the PNG/WebP.
-- UI must feel **visually integrated** with the world (warm tones, organic shapes, storybook signs) — **not** unrelated white dashboard cards, worksheets, or generic shadcn **Card** panels.
+Compose at runtime — **do not** flatten into one static screen image:
 
-Dynamic text stays **real UI** for accessibility, responsiveness, localization, and state. **Never** bake changing day/event copy into environment artwork.
+| Layer | Role |
+|-------|------|
+| **Environment artwork** | Dominant illustrated canvas (PNG/WebP; no character, no app UI, no dynamic text) |
+| **Canonical character** | **`LittleAdventureCharacter`** composited in-scene |
+| **Dynamic day/event UI** | Storybook banner + HTML typography (day name, event name, emoji from data) |
+| **Context navigation** | Today, weekday strip (overlay sky area when world is full-bleed) |
+| **Utility UI** | Home, Audio |
+| **Interaction / progression** | Day/event **banner is the tap target** on the WTW landing/day screen; locked until “Tap to move forward” finishes; then gentle gold glow. Challenge celebration/Next stays on formal games — not this landing. |
 
-### Screen hierarchy (top → bottom)
+Dynamic text stays **real UI**. **Never** bake day names, events, or weekday labels into environment or banner artwork.
 
-| Layer | Examples |
-|-------|----------|
-| **Utility UI** | Home, Audio (existing controls; calm top area) |
-| **Context UI** | Today, weekday strip (Mon–Sun), active-day marker |
-| **Context title** | Storybook-style day/event banner (e.g. MONDAY + School) |
-| **World** | Environment artwork → character on ground plane |
-| **Interaction UI** | Tap target on contextual title/banner when appropriate; other progression controls per product rules |
+**Reject:** large white lesson cards, dashboard panels, “banner block → gap → small environment thumbnail.” **Accept:** environment fills the play band; banner and nav **overlay** the illustrated world.
 
-The **environment remains visually dominant** in the main band (character → path → destination must stay readable).
+### Screen hierarchy (visual read)
+
+| Zone | Content |
+|------|---------|
+| **Top** | Home, Audio (utility); Today + weekday strip (lightweight, in/near sky) |
+| **Upper world** | Large storybook day/event banner (MONDAY dominant; event secondary) |
+| **Midground** | Destination (e.g. School) |
+| **Foreground** | Character, path, ground — **character → path → destination** must read immediately |
 
 ### Storybook contextual banner
 
-The active day/event may use a **large storybook-style sign/banner** (UI only — no banner image asset required):
+Large illustrated **sign/plaque** feel — warm cream/parchment UI, organic edges, soft depth, highly readable type. Must **not** resemble shadcn Card, worksheets, white information panels, or a generic CTA button.
 
-- Warm cream/paper tone, organic rounded shape, subtle border and soft depth
-- Large child-readable day name; smaller secondary event label (and optional emoji from data)
-- Must **not** look like a white dashboard card, form, worksheet, or rigid rectangular lesson panel
+**Hierarchy:** day name dominant (e.g. MONDAY); event secondary (emoji + School / Chai Shop / Cake / Park from data). Do **not** hardcode event names in the banner component.
 
-Apply this pattern per scene as product rolls out (Monday → School is the first). Do **not** build a generic banner framework unless a **second** scene repeats the same structure.
+**Same visual language** for every weekday/event; **different environments** later (School vs Chai Shop vs Cake vs Park) — do not force identical physical composition.
+
+**Interaction:** the entire visible banner is tappable (≥ ~60px). **Locked** (voice playing): no glow, not tappable. **Ready** (after tap-to-move-forward voice): soft golden outer glow + slow breathe; child tap advances via existing WTW walk logic.
+
+**Preferred end state:** reusable decorative artwork at `public/environments/ui/walk-through-week-day-banner.png` (shape/leaves/depth only — **no** dynamic labels). Until that asset exists, use minimal token-driven UI with architecture ready to swap in the plaque image via CSS (`--adventure-wtw-banner-plaque-image`). Do **not** substitute an ever-growing pile of CSS/SVG primitives when reference quality cannot be achieved cleanly.
+
+### Environment sizing
+
+Use locked environment assets at **natural aspect ratio**; scale to **dominate** the screen. Avoid `object-cover` crops that hide path, destination, or storytelling. Avoid excessive margins and meaningless empty bands.
+
+**School (Mon–Thu):** `public/environments/walk-through-week/monday-school.png` until per-day variants exist.
+
+### Visual language vs physical composition
+
+**Reuse the same visual language** across WTW (warm illustration, character, banner treatment, Today/weekday nav, hierarchy, sensory-friendly calm).
+
+**Do not** force the **same physical composition** on every event. Real-life events change environment, destination, props, path, and character placement:
+
+| Days | Event | Environment direction |
+|------|-------|---------------------|
+| Mon–Thu | School | School environment; character → path → school |
+| Fri | Chai Shop | Dedicated shop world (not School + label) |
+| Sat | Cake | Dedicated cake experience |
+| Sun | Park | Dedicated park world |
+
+Do **not** build a generic scene engine, registry, or composition framework for WTW — screen-level composition only.
 
 ### Day navigation placement
 
-**Today + weekday selector belong at the top** of the play content (above the storybook title and above the illustrated world). Keep the strip **lightweight and calm** — not a large card.
+**Today + weekday selector** at the **top** of the world read (overlay sky on full-bleed scenes). Lightweight, calm, secondary to the illustration — not inside a large card.
+
+### World-first composition (viewport)
+
+Walk Through the Week is **world-first, not card-first**. The illustrated environment should **dominate the viewport** (tablet portrait). UI layers **on top of** the world — Home, Today/weekdays, Audio, and the day/event banner — rather than reserving a separate header stack above a centered image. Avoid large page-level cream margins and empty flex regions; use **natural sky and ground inside the artwork** for breathing room. Do not treat environment PNGs as centered content cards. Top navigation may overlay the upper sky of the environment.
 
 ### Future environments (concept only)
 
-School-style environments align with Mon–Thu; Chai Shop (Fri), Cake (Sat), Park (Sun) share the same **composition idea** without requiring a scene engine or registry in rules.
+Add Chai Shop, Cake, and Park environment artwork when product approves; follow the same layer model and reference quality bar.
 
 ---
 

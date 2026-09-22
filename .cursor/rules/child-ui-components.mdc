@@ -14,10 +14,13 @@ Applies when editing presentation layers for the **child play experience** (not 
 
 ### Walk Through the Week
 
-- **Today** and the **weekday strip** sit at the **top** of the content column (before the illustrated world band).
-- Active day/event: prefer a **storybook banner** (cream/paper UI, organic shape, large day typography) over a white **`ChildCard`** lesson panel when the product direction calls for it (Monday → School first).
-- Voice/tap affordances on the banner use the same calm border/glow patterns as other WTW tap targets (`adventure-wtw-*` classes) — not harsh error chrome.
-- Environment sizing: use the artwork’s **natural aspect ratio**, scale up to dominate the middle/lower screen; avoid `object-cover` crops that hide path/school/destination.
+- **One illustrated world** — environment is the dominant canvas; Today/weekday strip and storybook banner **overlay** the sky/world (not a separate column above a small artwork strip).
+- **Today** and the **weekday strip** sit in the **upper/sky** area; lightweight, calm, not a large card.
+- Active day/event: **storybook banner** (cream/paper plaque, organic shape, large day typography) — not a white **`ChildCard`** lesson panel on illustrated-world screens (Monday → School first). The banner is the **forward tap target** on the WTW day screen (no separate Next). Locked while voice plays; ready after “Tap to move forward” with a **soft gold glow** and slow breathe (not pink/green/neon card chrome).
+- Banner architecture: dynamic day + event from data (School, Chai Shop, Cake, Park); future decorative plaque at `public/environments/ui/walk-through-week-day-banner.png` (see world rules §16). Same visual language across events.
+- Entire visible banner is the touch target (~60–80px minimum); do not add a giant invisible hit rectangle or a floating extra button.
+- Environment: **natural aspect ratio**, scale to dominate; avoid `object-cover` crops that hide path/destination. Character ~25–30% of scene height, **standing on the path**.
+- Composition reference: `docs/design-references/walk-through-week/school-day-reference.png` (design only).
 
 ## Touch and layout
 

@@ -72,4 +72,4 @@ Celebration choreography may coordinate with the character visually, but **progr
 
 When scenes add environment and props ([little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc)), this component stays the **same identity** (clothing, backpack, proportions). Screens compose **`LittleAdventureCharacter`** inside world layers; the character shell handles sizing and mood motion — not scene layout, prop logic, or ground placement rules (those belong in world/scene composition outside this component).
 
-Walk Through the Week (e.g. Monday → School): use **`mood="guiding"`** in the lower-left foreground, composited **above** the environment asset — never embedded in environment artwork.
+Walk Through the Week (e.g. Monday → School): use **`mood="guiding"`** in the lower-left foreground, composited **above** the environment asset — never embedded in environment artwork. Scale the character as a **meaningful foreground companion** (~20–30% of scene height where composition allows); scene components set size/position — not tiny decorative scale. See `docs/design-references/walk-through-week/school-day-reference.png` for prominence vs path/school.
