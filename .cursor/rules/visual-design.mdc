@@ -66,6 +66,10 @@ Environment palette harmonizes with Soft Adventure; world rule documents referen
 
 Cohesive scenes may use **dedicated environment illustration assets** (environment only — no character, no UI baked in). See [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc).
 
+## Walk Through the Week
+
+Treat Walk Through the Week as **illustrated world + integrated UI**, not a stack of generic lesson cards on top of a small illustration. Context (Today, weekdays, day/event title) uses **storybook-inspired UI** (organic banners/signs) where product defines it; utility chrome (Home, Audio) stays calm at the top. Reject compositions that separate a narrow artwork strip from a large white **surface** card — see [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc) §16.
+
 ## Character artwork
 
 Production character moods are **illustrated raster assets** behind **`LittleAdventureCharacter`** (shell + figure). Keep **one** canonical character component; swap or refine **figure** artwork without forking per-game mascots. Environment artwork is **separate** and composited beneath the character.

@@ -19,6 +19,8 @@ Design for **sensory sensitivity** alongside play-first UX. Pair with [child-exp
 
 Illustrated **static** environment assets are preferred for calm scenes; if motion is added to world layers later, keep it **optional, subtle, and off** under reduced motion — same rules as above.
 
+Walk Through the Week storybook banners and integrated UI should use **subtle** depth only — no aggressive shadows, flashing voice borders, or dense chrome that competes with the illustrated environment.
+
 ## Animations should be
 
 - **Short** — brief enough that the child can return to the task quickly

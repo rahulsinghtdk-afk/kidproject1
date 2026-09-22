@@ -283,6 +283,59 @@ World art **complements** existing UI; the app must not feel like a different pr
 
 ---
 
+## 16. Walk Through the Week — illustrated world (not card-based lessons)
+
+**Walk Through the Week is an illustrated world experience, not a card-based lesson screen.**
+
+The screen should read as **one cohesive children’s adventure scene**, not “illustration → large white information card.” Composition combines:
+
+1. Illustrated environment (dominant)
+2. Canonical **`LittleAdventureCharacter`**
+3. Dynamic day/event UI (real HTML text)
+4. Gentle **storybook title** treatment for the active day/event
+5. Existing interaction and progression (tap to move forward, voice, weekday walk — unchanged by this visual model)
+
+### Environment vs UI (non-negotiable)
+
+- Environment artwork remains a **pure environment asset** (no character, no app UI, no baked dynamic text).
+- **Day names, Today, event names, Home, Audio, weekday strip, progression taps** remain **application UI**.
+- UI may **overlay** or sit **naturally above** the illustrated band while staying technically separate from the PNG/WebP.
+- UI must feel **visually integrated** with the world (warm tones, organic shapes, storybook signs) — **not** unrelated white dashboard cards, worksheets, or generic shadcn **Card** panels.
+
+Dynamic text stays **real UI** for accessibility, responsiveness, localization, and state. **Never** bake changing day/event copy into environment artwork.
+
+### Screen hierarchy (top → bottom)
+
+| Layer | Examples |
+|-------|----------|
+| **Utility UI** | Home, Audio (existing controls; calm top area) |
+| **Context UI** | Today, weekday strip (Mon–Sun), active-day marker |
+| **Context title** | Storybook-style day/event banner (e.g. MONDAY + School) |
+| **World** | Environment artwork → character on ground plane |
+| **Interaction UI** | Tap target on contextual title/banner when appropriate; other progression controls per product rules |
+
+The **environment remains visually dominant** in the main band (character → path → destination must stay readable).
+
+### Storybook contextual banner
+
+The active day/event may use a **large storybook-style sign/banner** (UI only — no banner image asset required):
+
+- Warm cream/paper tone, organic rounded shape, subtle border and soft depth
+- Large child-readable day name; smaller secondary event label (and optional emoji from data)
+- Must **not** look like a white dashboard card, form, worksheet, or rigid rectangular lesson panel
+
+Apply this pattern per scene as product rolls out (Monday → School is the first). Do **not** build a generic banner framework unless a **second** scene repeats the same structure.
+
+### Day navigation placement
+
+**Today + weekday selector belong at the top** of the play content (above the storybook title and above the illustrated world). Keep the strip **lightweight and calm** — not a large card.
+
+### Future environments (concept only)
+
+School-style environments align with Mon–Thu; Chai Shop (Fri), Cake (Sat), Park (Sun) share the same **composition idea** without requiring a scene engine or registry in rules.
+
+---
+
 ## Documented artwork specs
 
 Product-defined **environment artwork** specifications (e.g. Monday → School) live under `docs/design/` when created. Implementation follows those specs plus this rule; do not contradict celebration, audio, or character boundaries.

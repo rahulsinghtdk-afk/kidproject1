@@ -12,6 +12,13 @@ Applies when editing presentation layers for the **child play experience** (not 
 - Learning cards, TODAY, weekday strip, and controls stay **existing React/UI** — do not bake them into environment artwork.
 - Prefer **illustrated environment assets** when CSS/SVG primitives would make the character feel pasted onto a diagram; use CSS/SVG only for simple supporting layout/blend when quality stays coherent.
 
+### Walk Through the Week
+
+- **Today** and the **weekday strip** sit at the **top** of the content column (before the illustrated world band).
+- Active day/event: prefer a **storybook banner** (cream/paper UI, organic shape, large day typography) over a white **`ChildCard`** lesson panel when the product direction calls for it (Monday → School first).
+- Voice/tap affordances on the banner use the same calm border/glow patterns as other WTW tap targets (`adventure-wtw-*` classes) — not harsh error chrome.
+- Environment sizing: use the artwork’s **natural aspect ratio**, scale up to dominate the middle/lower screen; avoid `object-cover` crops that hide path/school/destination.
+
 ## Touch and layout
 
 - Minimum **60px** effective touch target for tappable controls (button, draggable, choice tile). Use padding and `min-width` / `min-height` or expanded hit slop — not just visible graphic size.

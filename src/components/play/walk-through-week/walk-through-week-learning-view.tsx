@@ -27,6 +27,7 @@ import {
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { WalkThroughWeekMondaySchoolScene } from "./walk-through-week-monday-school-scene";
+import { WalkThroughWeekStorybookDayBanner } from "./walk-through-week-storybook-day-banner";
 
 type WalkThroughWeekLearningViewProps = {
   currentWeekdayId: WeekdayId;
@@ -96,34 +97,26 @@ function WalkThroughWeekLearningView({
     return `This is ${activeDay.displayName}. ${activeDay.eventName}. Tap to move forward.`;
   })();
 
+  const voiceStateClass = isDayCardTapEnabled
+    ? "adventure-wtw-card-voice-ready"
+    : "adventure-wtw-card-voice-waiting";
+
   return (
     <motion.div
       className={cn(
         "flex min-h-0 w-full flex-1 flex-col items-center",
         showMondaySchoolScene
-          ? "justify-between gap-3 py-1 pb-3 landscape:gap-2 landscape:py-0 landscape:pb-2"
+          ? "justify-start gap-1.5 pb-1 landscape:gap-1 landscape:pb-1"
           : "justify-center gap-8 py-4"
       )}
       initial={{ opacity: 0, y: reducedMotion ? 0 : 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={adventureTransition.slow}
     >
-      {showMondaySchoolScene ? (
-        <div
-          className={cn(
-            "flex min-h-[min(42dvh,21rem)] min-w-0 flex-1 flex-col",
-            "max-h-[min(54dvh,28rem)] landscape:min-h-[min(30dvh,13rem)] landscape:max-h-[min(42dvh,17rem)]",
-            "-mx-[max(1.25rem,env(safe-area-inset-left))] w-[calc(100%+max(1.25rem,env(safe-area-inset-left))+max(1.25rem,env(safe-area-inset-right)))]"
-          )}
-        >
-          <WalkThroughWeekMondaySchoolScene className="min-h-0 flex-1" />
-        </div>
-      ) : null}
-
       <div
         className={cn(
-          "flex w-full max-w-lg flex-col items-center gap-6",
-          showMondaySchoolScene && "shrink-0"
+          "flex w-full max-w-lg shrink-0 flex-col items-center",
+          showMondaySchoolScene ? "gap-2 landscape:gap-1.5" : "gap-6"
         )}
       >
         <ChildText size="label" className="tracking-wide uppercase">
@@ -197,64 +190,84 @@ function WalkThroughWeekLearningView({
           aria-disabled={!isDayCardTapEnabled}
           aria-busy={!isDayCardTapEnabled}
           className={cn(
-            "w-full max-w-md rounded-[var(--adventure-radius-xl)] text-left",
+            "w-full max-w-md text-left",
+            showMondaySchoolScene
+              ? "overflow-hidden rounded-[2.1rem]"
+              : "rounded-[var(--adventure-radius-xl)]",
             "min-h-[var(--adventure-touch-min)] touch-manipulation",
             "border-[3px] border-solid bg-transparent p-0",
             "transition-[border-color,box-shadow] duration-[var(--adventure-duration-normal)]",
             "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-adventure-orange/40",
             !isDayCardTapEnabled && "cursor-default",
-            isDayCardTapEnabled
-              ? "adventure-wtw-card-voice-ready"
-              : "adventure-wtw-card-voice-waiting"
+            voiceStateClass
           )}
           aria-label={cardAriaLabel}
         >
-          <ChildCard
-            variant="flat"
-            padding="roomy"
-            className="flex w-full flex-col items-center gap-4 border-0 bg-adventure-surface text-center shadow-none"
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={`${activeWeekdayId}-${walkStep}`}
-                className="flex w-full flex-col items-center gap-4 text-center"
-                initial={
-                  reducedMotion
-                    ? false
-                    : adventureMotionVariants.fadeIn.initial
-                }
-                animate={adventureMotionVariants.fadeIn.animate}
-                exit={
-                  reducedMotion ? undefined : adventureMotionVariants.fadeIn.exit
-                }
-                transition={adventureTransition.normal}
-              >
-                {isTomorrowTeachingStep ? (
-                  <ChildText
-                    size="label"
-                    className="rounded-full bg-adventure-orange/15 px-4 py-1 tracking-wide text-adventure-orange uppercase"
-                  >
-                    Tomorrow
-                  </ChildText>
-                ) : null}
-                <ChildHeading
-                  level={1}
-                  as="h2"
-                  className="uppercase tracking-wide"
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={`${activeWeekdayId}-${walkStep}-${showMondaySchoolScene ? "story" : "card"}`}
+              className="w-full"
+              initial={
+                reducedMotion ? false : adventureMotionVariants.fadeIn.initial
+              }
+              animate={adventureMotionVariants.fadeIn.animate}
+              exit={
+                reducedMotion ? undefined : adventureMotionVariants.fadeIn.exit
+              }
+              transition={adventureTransition.normal}
+            >
+              {showMondaySchoolScene ? (
+                <WalkThroughWeekStorybookDayBanner
+                  dayName={activeDay.displayName}
+                  eventName={activeDay.eventName}
+                  eventEmoji={activeDay.eventEmoji}
+                  showTomorrowBadge={isTomorrowTeachingStep}
+                />
+              ) : (
+                <ChildCard
+                  variant="flat"
+                  padding="roomy"
+                  className="flex w-full flex-col items-center gap-4 border-0 bg-adventure-surface text-center shadow-none"
                 >
-                  {activeDay.displayName}
-                </ChildHeading>
-                <span className="text-6xl leading-none" aria-hidden>
-                  {activeDay.eventEmoji}
-                </span>
-                <ChildHeading level={2} as="h3">
-                  {activeDay.eventName}
-                </ChildHeading>
-              </motion.div>
-            </AnimatePresence>
-          </ChildCard>
+                  {isTomorrowTeachingStep ? (
+                    <ChildText
+                      size="label"
+                      className="rounded-full bg-adventure-orange/15 px-4 py-1 tracking-wide text-adventure-orange uppercase"
+                    >
+                      Tomorrow
+                    </ChildText>
+                  ) : null}
+                  <ChildHeading
+                    level={1}
+                    as="h2"
+                    className="uppercase tracking-wide"
+                  >
+                    {activeDay.displayName}
+                  </ChildHeading>
+                  <span className="text-6xl leading-none" aria-hidden>
+                    {activeDay.eventEmoji}
+                  </span>
+                  <ChildHeading level={2} as="h3">
+                    {activeDay.eventName}
+                  </ChildHeading>
+                </ChildCard>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </motion.button>
       </div>
+
+      {showMondaySchoolScene ? (
+        <div
+          className={cn(
+            "flex min-h-0 w-full flex-1 flex-col items-center justify-end",
+            "-mx-[max(1.25rem,env(safe-area-inset-left))] w-[calc(100%+max(1.25rem,env(safe-area-inset-left))+max(1.25rem,env(safe-area-inset-right)))]",
+            "pt-0.5 landscape:pt-0"
+          )}
+        >
+          <WalkThroughWeekMondaySchoolScene fillAvailableHeight className="mx-auto" />
+        </div>
+      ) : null}
     </motion.div>
   );
 }

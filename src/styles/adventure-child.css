@@ -141,6 +141,20 @@
     );
   }
 
+  /** Walk Through the Week — storybook day/event sign (UI, not artwork). */
+  .adventure-wtw-storybook-banner {
+    border-radius: 2rem 2.25rem 1.65rem 2.1rem;
+    border: 2px solid color-mix(in srgb, var(--adventure-orange) 28%, var(--adventure-border));
+    background: linear-gradient(
+      165deg,
+      var(--adventure-surface-elevated) 0%,
+      color-mix(in srgb, var(--adventure-background) 55%, var(--adventure-surface-elevated)) 100%
+    );
+    box-shadow:
+      0 3px 0 color-mix(in srgb, var(--adventure-orange) 18%, transparent),
+      var(--adventure-shadow-sm);
+  }
+
   /** Walk Through the Week — voice playing; card not tappable yet. */
   .adventure-wtw-card-voice-waiting {
     border-color: color-mix(
