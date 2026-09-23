@@ -15,12 +15,14 @@ import {
   getNextWeekdayInWalkOrder,
   isWalkCycleComplete,
 } from "@/lib/walk-through-week/week-walk-navigation";
+import { isWalkThroughWeekIllustratedWorldEvent } from "@/lib/walk-through-week/walk-through-week-illustrated-world";
 import {
   adventureMotionVariants,
   adventureTransition,
 } from "@/lib/motion/adventure-motion";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
+import { WalkThroughWeekFridayChaiShopScene } from "./walk-through-week-friday-chai-shop-scene";
 import { WalkThroughWeekMondaySchoolScene } from "./walk-through-week-monday-school-scene";
 import { WalkThroughWeekStorybookDayBanner } from "./walk-through-week-storybook-day-banner";
 import { WalkThroughWeekTapToMoveForwardSign } from "./walk-through-week-tap-to-move-forward-sign";
@@ -116,8 +118,11 @@ function WalkThroughWeekLearningView({
 
   const realTodayDay = getWeekdayEventDefaults(currentWeekdayId);
   const activeDay = getWeekdayEventDefaults(activeWeekdayId);
-  /** Mon–Thu share the locked School environment artwork (see world rules §16). */
-  const showMondaySchoolScene = activeDay.eventId === "school";
+  const showIllustratedWorld = isWalkThroughWeekIllustratedWorldEvent(
+    activeDay.eventId
+  );
+  const isSchoolIllustratedWorld = activeDay.eventId === "school";
+  const isChaiShopIllustratedWorld = activeDay.eventId === "chaiShop";
   const isTomorrowTeachingStep = walkStep === 1;
   const cycleComplete = isWalkCycleComplete(walkStep);
   const isOpeningToday =
@@ -125,8 +130,8 @@ function WalkThroughWeekLearningView({
   const canTapToAdvance = canAdvanceWalk(walkStep) && isDayCardTapEnabled;
 
   useEffect(() => {
-    onMondaySchoolSceneVisibleChange?.(showMondaySchoolScene);
-  }, [onMondaySchoolSceneVisibleChange, showMondaySchoolScene]);
+    onMondaySchoolSceneVisibleChange?.(showIllustratedWorld);
+  }, [onMondaySchoolSceneVisibleChange, showIllustratedWorld]);
 
   const handleWalkForwardTap = useCallback(() => {
     if (!isDayCardTapEnabled) {
@@ -171,7 +176,7 @@ function WalkThroughWeekLearningView({
         transition={adventureTransition.normal}
       >
         <WalkThroughWeekStorybookDayBanner
-          inWorld={showMondaySchoolScene}
+          inWorld={showIllustratedWorld}
           interaction="locked"
           weekdayId={activeWeekdayId}
         />
@@ -184,10 +189,11 @@ function WalkThroughWeekLearningView({
       visible={isTapForwardSignVisible}
       tappable={canTapToAdvance}
       onTap={handleWalkForwardTap}
-      inWorld={showMondaySchoolScene}
+      inWorld={showIllustratedWorld}
+      artwork={isChaiShopIllustratedWorld ? "chaiCup" : "roadSign"}
       ariaLabel={tapForwardSignAriaLabel}
       className={
-        showMondaySchoolScene
+        isSchoolIllustratedWorld
           ? cn(
               "absolute z-[32]",
               "bottom-[max(10%,env(safe-area-inset-bottom)+0.5rem)]",
@@ -195,15 +201,23 @@ function WalkThroughWeekLearningView({
               "sm:bottom-[11%] sm:left-[44%] sm:w-[min(38vw,17.5rem)]",
               "landscape:bottom-[8%] landscape:left-[46%] landscape:w-[min(34vw,14rem)]"
             )
-          : cn(
-              "relative mx-auto mt-4",
-              "w-[min(72vw,16.5rem)] max-w-[16.5rem]"
-            )
+          : isChaiShopIllustratedWorld
+            ? cn(
+                "absolute z-[32]",
+                "bottom-[max(14%,env(safe-area-inset-bottom)+0.65rem)]",
+                "left-[38%] w-[min(50vw,20rem)] max-w-[20rem]",
+                "sm:bottom-[15%] sm:left-[40%] sm:w-[min(46vw,21rem)]",
+                "landscape:bottom-[12%] landscape:left-[42%] landscape:w-[min(40vw,17rem)]"
+              )
+            : cn(
+                "relative mx-auto mt-4",
+                "w-[min(72vw,16.5rem)] max-w-[16.5rem]"
+              )
       }
     />
   );
 
-  if (showMondaySchoolScene) {
+  if (showIllustratedWorld) {
     return (
       <motion.div
         className={cn(
@@ -214,7 +228,11 @@ function WalkThroughWeekLearningView({
         animate={{ opacity: 1, y: 0 }}
         transition={adventureTransition.slow}
       >
-        <WalkThroughWeekMondaySchoolScene fillViewport />
+        {isSchoolIllustratedWorld ? (
+          <WalkThroughWeekMondaySchoolScene fillViewport />
+        ) : (
+          <WalkThroughWeekFridayChaiShopScene fillViewport />
+        )}
 
         <div
           className="pointer-events-none absolute inset-0 z-[32]"

@@ -18,7 +18,7 @@ const WALK_THROUGH_WEEK_FINISHED_BANNER_FILENAME: Record<WeekdayId, string> = {
   tuesday: "tuesday-school.png",
   wednesday: "wednesday-school.png",
   thursday: "thursday-school.png",
-  friday: "friday-chai-shop.png",
+  friday: "friday-chaishop.png",
   saturday: "saturday-cake.png",
   sunday: "sunday-park.png",
 };

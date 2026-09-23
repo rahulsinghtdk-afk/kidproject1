@@ -2,13 +2,23 @@
 
 import { useCallback, useState } from "react";
 import { cn } from "@/lib/utils";
-import { adventureTapScale } from "@/lib/motion/adventure-motion";
+import {
+  adventureTapScale,
+  adventureTransition,
+} from "@/lib/motion/adventure-motion";
 import { motion, useReducedMotion } from "motion/react";
 import {
   WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_HEIGHT,
   WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_SRC,
   WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_WIDTH,
 } from "./walk-through-week-tap-to-move-forward-artwork";
+import {
+  WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_HEIGHT,
+  WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_SRC,
+  WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_WIDTH,
+} from "./walk-through-week-tap-to-move-forward-chai-artwork";
+
+type WalkThroughWeekTapForwardArtwork = "roadSign" | "chaiCup";
 
 type WalkThroughWeekTapToMoveForwardSignProps = {
   /** Sign is on screen (tap-forward instruction has started for this step). */
@@ -18,6 +28,8 @@ type WalkThroughWeekTapToMoveForwardSignProps = {
   onTap: () => void;
   /** Composited over full-bleed illustrated world (school days). */
   inWorld?: boolean;
+  /** School days use the road sign; Friday Chai Shop uses the chai-cup artwork. */
+  artwork?: WalkThroughWeekTapForwardArtwork;
   className?: string;
   ariaLabel: string;
 };
@@ -31,16 +43,24 @@ function WalkThroughWeekTapToMoveForwardSign({
   tappable,
   onTap,
   inWorld = false,
+  artwork = "roadSign",
   className,
   ariaLabel,
 }: WalkThroughWeekTapToMoveForwardSignProps) {
   const reducedMotion = useReducedMotion() ?? false;
-  const [artworkWidth, setArtworkWidth] = useState(
-    WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_WIDTH
-  );
-  const [artworkHeight, setArtworkHeight] = useState(
-    WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_HEIGHT
-  );
+  const isChaiCup = artwork === "chaiCup";
+  const defaultArtworkWidth = isChaiCup
+    ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_WIDTH
+    : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_WIDTH;
+  const defaultArtworkHeight = isChaiCup
+    ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_HEIGHT
+    : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_HEIGHT;
+  const artworkSrc = isChaiCup
+    ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_SRC
+    : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_SRC;
+
+  const [artworkWidth, setArtworkWidth] = useState(defaultArtworkWidth);
+  const [artworkHeight, setArtworkHeight] = useState(defaultArtworkHeight);
 
   const handleArtworkLoad = useCallback(
     (event: React.SyntheticEvent<HTMLImageElement>) => {
@@ -69,9 +89,19 @@ function WalkThroughWeekTapToMoveForwardSign({
           ? { scale: adventureTapScale(reducedMotion) }
           : undefined
       }
+      initial={
+        isChaiCup && !reducedMotion ? { opacity: 0, scale: 0.96 } : false
+      }
+      animate={
+        isChaiCup && !reducedMotion ? { opacity: 1, scale: 1 } : undefined
+      }
+      transition={
+        isChaiCup && !reducedMotion ? adventureTransition.normal : undefined
+      }
       className={cn(
         "adventure-wtw-tap-forward-sign touch-manipulation",
         inWorld && "adventure-wtw-tap-forward-sign--in-world",
+        isChaiCup && "adventure-wtw-tap-forward-sign--chai",
         tappable
           ? "adventure-wtw-tap-forward-sign--ready"
           : "adventure-wtw-tap-forward-sign--waiting",
@@ -84,7 +114,8 @@ function WalkThroughWeekTapToMoveForwardSign({
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- static public raster artwork */}
       <img
-        src={WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_SRC}
+        key={artworkSrc}
+        src={artworkSrc}
         alt=""
         width={artworkWidth}
         height={artworkHeight}
@@ -98,3 +129,4 @@ function WalkThroughWeekTapToMoveForwardSign({
 }
 
 export { WalkThroughWeekTapToMoveForwardSign };
+export type { WalkThroughWeekTapForwardArtwork };

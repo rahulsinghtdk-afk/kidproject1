@@ -279,6 +279,16 @@
           transparent
         );
   }
+
+  /** Chai Shop — softer emphasis; artwork carries the instruction. */
+  .adventure-wtw-tap-forward-sign--chai.adventure-wtw-tap-forward-sign--waiting::before,
+  .adventure-wtw-tap-forward-sign--chai.adventure-wtw-tap-forward-sign--ready::before {
+    --adventure-wtw-tap-forward-glow-waiting-spread: 14px;
+    --adventure-wtw-tap-forward-glow-waiting-strength: 22%;
+    --adventure-wtw-tap-forward-glow-ready-spread: 18px;
+    --adventure-wtw-tap-forward-glow-ready-strength: 30%;
+    --adventure-wtw-tap-forward-glow-ready-ring-strength: 36%;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
