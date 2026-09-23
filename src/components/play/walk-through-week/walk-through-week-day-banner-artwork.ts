@@ -1,11 +1,18 @@
 /**
- * Future reusable illustrated storybook plaque for WTW day/event banners.
- * Decor only — no day names, events, or emoji baked into the artwork.
+ * Legacy decorative frame (temporary fallback only).
+ * Finished day/event art: `public/environments/ui/walk-through-week/banners/*.png`
  *
- * When the asset exists, wire it via CSS custom property (see adventure-child.css):
- * `--adventure-wtw-banner-plaque-image: url("…")`
+ * Kept at: `public/environments/walk-through-week/day-event-banner.png`
  */
 const WALK_THROUGH_WEEK_DAY_BANNER_ARTWORK_SRC =
-  "/environments/ui/walk-through-week-day-banner.png";
+  "/environments/walk-through-week/day-event-banner.png";
 
-export { WALK_THROUGH_WEEK_DAY_BANNER_ARTWORK_SRC };
+/** Native dimensions of `day-event-banner.png`. */
+const WALK_THROUGH_WEEK_DAY_BANNER_ARTWORK_WIDTH = 1816;
+const WALK_THROUGH_WEEK_DAY_BANNER_ARTWORK_HEIGHT = 866;
+
+export {
+  WALK_THROUGH_WEEK_DAY_BANNER_ARTWORK_HEIGHT,
+  WALK_THROUGH_WEEK_DAY_BANNER_ARTWORK_SRC,
+  WALK_THROUGH_WEEK_DAY_BANNER_ARTWORK_WIDTH,
+};

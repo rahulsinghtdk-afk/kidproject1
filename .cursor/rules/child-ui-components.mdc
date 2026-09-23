@@ -11,13 +11,14 @@ Applies when editing presentation layers for the **child play experience** (not 
 - **Illustrated environments** belong to the **page** (full-bleed or natural band), not a nested “artwork card” with heavy frames or card-within-card chrome.
 - Learning cards, TODAY, weekday strip, and controls stay **existing React/UI** — do not bake them into environment artwork.
 - Prefer **illustrated environment assets** when CSS/SVG primitives would make the character feel pasted onto a diagram; use CSS/SVG only for simple supporting layout/blend when quality stays coherent.
+- **Illustrated child-facing UI** (e.g. WTW day/event banner frames) may ship as raster assets under `public/environments/ui/` when visual coherence requires it; keep dynamic text and interaction glow in React/CSS, not baked into the PNG.
 
 ### Walk Through the Week
 
 - **One illustrated world** — environment is the dominant canvas; Today/weekday strip and storybook banner **overlay** the sky/world (not a separate column above a small artwork strip).
 - **Today** and the **weekday strip** sit in the **upper/sky** area; lightweight, calm, not a large card.
 - Active day/event: **storybook banner** (cream/paper plaque, organic shape, large day typography) — not a white **`ChildCard`** lesson panel on illustrated-world screens (Monday → School first). The banner is the **forward tap target** on the WTW day screen (no separate Next). Locked while voice plays; ready after “Tap to move forward” with a **soft gold glow** and slow breathe (not pink/green/neon card chrome).
-- Banner architecture: dynamic day + event from data (School, Chai Shop, Cake, Park); future decorative plaque at `public/environments/ui/walk-through-week-day-banner.png` (see world rules §16). Same visual language across events.
+- Banner architecture: illustrated frame at `public/environments/walk-through-week/day-event-banner.png` + dynamic day/event from data (School, Chai Shop, Cake, Park); see world rules §16. Same banner artwork across events; interaction glow in CSS, not in the PNG.
 - Entire visible banner is the touch target (~60–80px minimum); do not add a giant invisible hit rectangle or a floating extra button.
 - Environment: **natural aspect ratio**, scale to dominate; avoid `object-cover` crops that hide path/destination. Character ~25–30% of scene height, **standing on the path**.
 - Composition reference: `docs/design-references/walk-through-week/school-day-reference.png` (design only).

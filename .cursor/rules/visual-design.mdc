@@ -70,7 +70,7 @@ Cohesive scenes may use **dedicated environment illustration assets** (environme
 
 Walk Through the Week is **world-first, not card-first**: the environment should **own the viewport** (one continuous scene), with Home, Today/weekdays, Audio, and the banner **layered into** the sky — not stacked above a centered image with page margins. Utility chrome stays small and secondary.
 
-The **Day/Event banner** is a storybook plaque in the world (organic, warm, illustrated) — not a white card or shadcn button. It can be the **child tap target** to move the week forward, using a calm gold glow when ready. Dynamic day/event text stays HTML, separate from environment and future plaque artwork.
+The **Day/Event banner** is a **first-class illustrated UI asset** (reusable raster frame at `public/environments/walk-through-week/day-event-banner.png`) composited with **dynamic HTML** day/event text — not a white card, shadcn button, or CSS gradient plaque. It can be the **child tap target** to move the week forward, using a calm gold glow when ready (glow in the app layer, not baked into the PNG). Same banner frame for every weekday/event; environments change per event.
 
 Approved composition reference: `docs/design-references/walk-through-week/school-day-reference.png` (not a runtime asset). Reject white lesson cards and “UI column + gap + small environment” layouts — see [little-adventure-world.mdc](mdc:.cursor/rules/little-adventure-world.mdc) §16. **Reuse visual language across days; do not force identical physical composition** on Chai Shop, Cake, or Park.
 

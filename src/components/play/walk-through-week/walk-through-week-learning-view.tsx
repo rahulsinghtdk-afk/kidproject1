@@ -180,7 +180,7 @@ function WalkThroughWeekLearningView({
       aria-busy={!isDayCardTapEnabled}
       className={cn(
         "min-h-[var(--adventure-touch-min)] touch-manipulation text-left",
-        "adventure-wtw-world-banner-tap w-[min(92%,21rem)] max-w-[21rem] rounded-[2.6rem] p-0",
+        "adventure-wtw-world-banner-tap w-[min(94%,26rem)] max-w-[26rem] p-0",
         "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-adventure-orange/35",
         !isDayCardTapEnabled && "pointer-events-none cursor-default"
       )}
@@ -202,10 +202,7 @@ function WalkThroughWeekLearningView({
           <WalkThroughWeekStorybookDayBanner
             inWorld={showMondaySchoolScene}
             interaction={bannerInteraction}
-            dayName={activeDay.displayName}
-            eventName={activeDay.eventName}
-            eventEmoji={activeDay.eventEmoji}
-            showTomorrowBadge={isTomorrowTeachingStep}
+            weekdayId={activeWeekdayId}
           />
         </motion.div>
       </AnimatePresence>

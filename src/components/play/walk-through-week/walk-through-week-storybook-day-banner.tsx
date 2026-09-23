@@ -1,16 +1,20 @@
 "use client";
 
-import { ChildHeading, ChildText } from "@/components/child";
+import { useCallback, useState } from "react";
+import type { WeekdayId } from "@/data/walk-through-week/default-week-events";
 import { cn } from "@/lib/utils";
+import {
+  WALK_THROUGH_WEEK_BANNER_LEGACY_FALLBACK_HEIGHT,
+  WALK_THROUGH_WEEK_BANNER_LEGACY_FALLBACK_SRC,
+  WALK_THROUGH_WEEK_BANNER_LEGACY_FALLBACK_WIDTH,
+  getWalkThroughWeekFinishedBannerSrc,
+} from "./walk-through-week-finished-banner-artwork";
 
 type WalkThroughWeekBannerInteraction = "locked" | "ready";
 
 type WalkThroughWeekStorybookDayBannerProps = {
-  dayName: string;
-  eventName: string;
-  eventEmoji: string;
-  showTomorrowBadge?: boolean;
-  /** Minimal plaque styling when composited over full-bleed environment. */
+  weekdayId: WeekdayId;
+  /** Minimal styling when composited over full-bleed environment. */
   inWorld?: boolean;
   /**
    * locked — voice playing; calm, not inviting tap.
@@ -21,64 +25,72 @@ type WalkThroughWeekStorybookDayBannerProps = {
 };
 
 /**
- * Storybook-style day/event sign for Walk Through the Week (UI only — not artwork).
- * Decorative plaque may later use `walk-through-week-day-banner-artwork.ts` via CSS variable.
+ * Walk Through the Week day/event banner — finished transparent artwork only.
+ * Interaction glow is applied in CSS, not baked into the PNG.
  */
 function WalkThroughWeekStorybookDayBanner({
-  dayName,
-  eventName,
-  eventEmoji,
-  showTomorrowBadge = false,
+  weekdayId,
   inWorld = false,
   interaction = "locked",
   className,
 }: WalkThroughWeekStorybookDayBannerProps) {
+  const finishedSrc = getWalkThroughWeekFinishedBannerSrc(weekdayId);
+  const [legacyFallback, setLegacyFallback] = useState(false);
+  const artworkSrc = legacyFallback
+    ? WALK_THROUGH_WEEK_BANNER_LEGACY_FALLBACK_SRC
+    : finishedSrc;
+
+  const [artworkWidth, setArtworkWidth] = useState(
+    WALK_THROUGH_WEEK_BANNER_LEGACY_FALLBACK_WIDTH
+  );
+  const [artworkHeight, setArtworkHeight] = useState(
+    WALK_THROUGH_WEEK_BANNER_LEGACY_FALLBACK_HEIGHT
+  );
+
+  const handleArtworkLoad = useCallback(
+    (event: React.SyntheticEvent<HTMLImageElement>) => {
+      const img = event.currentTarget;
+      if (img.naturalWidth > 0 && img.naturalHeight > 0) {
+        setArtworkWidth(img.naturalWidth);
+        setArtworkHeight(img.naturalHeight);
+      }
+    },
+    []
+  );
+
+  const handleArtworkError = useCallback(() => {
+    setLegacyFallback(true);
+    setArtworkWidth(WALK_THROUGH_WEEK_BANNER_LEGACY_FALLBACK_WIDTH);
+    setArtworkHeight(WALK_THROUGH_WEEK_BANNER_LEGACY_FALLBACK_HEIGHT);
+  }, []);
+
   return (
     <div
       className={cn(
-        "adventure-wtw-storybook-banner flex w-full flex-col items-center text-center",
+        "adventure-wtw-storybook-banner flex w-full flex-col items-center",
         inWorld && "adventure-wtw-storybook-banner--in-world",
         interaction === "ready"
           ? "adventure-wtw-storybook-banner--ready"
           : "adventure-wtw-storybook-banner--locked",
         className
       )}
+      style={{
+        aspectRatio: `${artworkWidth} / ${artworkHeight}`,
+      }}
     >
-      <div className="adventure-wtw-storybook-banner-plaque" aria-hidden />
-
-      <div
-        className="adventure-wtw-storybook-banner-content flex w-full min-h-[var(--adventure-touch-min)] flex-col items-center justify-center gap-2 px-6 py-4 sm:gap-2.5 sm:px-8 sm:py-5"
-      >
-        {showTomorrowBadge ? (
-          <ChildText
-            size="label"
-            className="rounded-full bg-adventure-orange/20 px-4 py-1 tracking-wide text-adventure-orange uppercase"
-          >
-            Tomorrow
-          </ChildText>
-        ) : null}
-
-        <ChildHeading
-          level={1}
-          as="h2"
-          className="text-[length:clamp(2rem,7.2vw,2.85rem)] uppercase tracking-[0.12em]"
-        >
-          {dayName}
-        </ChildHeading>
-
-        <div className="adventure-wtw-storybook-banner-event">
-          <span className="text-2xl leading-none sm:text-[1.65rem]" aria-hidden>
-            {eventEmoji}
-          </span>
-          <ChildHeading
-            level={3}
-            as="h3"
-            className="text-[length:var(--adventure-text-lg)] font-medium text-adventure-text/80"
-          >
-            {eventName}
-          </ChildHeading>
-        </div>
-      </div>
+      {/* eslint-disable-next-line @next/next/no-img-element -- static public raster artwork */}
+      <img
+        key={artworkSrc}
+        src={artworkSrc}
+        alt=""
+        width={artworkWidth}
+        height={artworkHeight}
+        className="adventure-wtw-storybook-banner-artwork"
+        draggable={false}
+        decoding="async"
+        onLoad={handleArtworkLoad}
+        onError={handleArtworkError}
+      />
     </div>
   );
 }

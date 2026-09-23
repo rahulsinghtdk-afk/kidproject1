@@ -329,7 +329,7 @@ Large illustrated **sign/plaque** feel — warm cream/parchment UI, organic edge
 
 **Interaction:** the entire visible banner is tappable (≥ ~60px). **Locked** (voice playing): no glow, not tappable. **Ready** (after tap-to-move-forward voice): soft golden outer glow + slow breathe; child tap advances via existing WTW walk logic.
 
-**Preferred end state:** reusable decorative artwork at `public/environments/ui/walk-through-week-day-banner.png` (shape/leaves/depth only — **no** dynamic labels). Until that asset exists, use minimal token-driven UI with architecture ready to swap in the plaque image via CSS (`--adventure-wtw-banner-plaque-image`). Do **not** substitute an ever-growing pile of CSS/SVG primitives when reference quality cannot be achieved cleanly.
+**Preferred end state:** one reusable decorative frame at `public/environments/walk-through-week/day-event-banner.png` (organic top + bottom plaques, leaves/depth only — **no** dynamic labels). Dynamic day/event typography stays HTML over the asset. Interaction **ready** glow and breathe live in the application layer (`adventure-wtw-storybook-banner--ready`), not in the PNG. Until the asset exists, ship the component architecture only — do **not** substitute an ever-growing pile of CSS/SVG plaque approximations.
 
 ### Environment sizing
 
