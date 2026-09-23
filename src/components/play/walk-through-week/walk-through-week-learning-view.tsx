@@ -17,13 +17,13 @@ import {
 } from "@/lib/walk-through-week/week-walk-navigation";
 import {
   adventureMotionVariants,
-  adventureTapScale,
   adventureTransition,
 } from "@/lib/motion/adventure-motion";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { WalkThroughWeekMondaySchoolScene } from "./walk-through-week-monday-school-scene";
 import { WalkThroughWeekStorybookDayBanner } from "./walk-through-week-storybook-day-banner";
+import { WalkThroughWeekTapToMoveForwardSign } from "./walk-through-week-tap-to-move-forward-sign";
 
 type WalkThroughWeekLearningViewProps = {
   currentWeekdayId: WeekdayId;
@@ -103,16 +103,16 @@ function WalkThroughWeekLearningView({
 }: WalkThroughWeekLearningViewProps) {
   const reducedMotion = useReducedMotion() ?? false;
   const audio = useAudio();
-  const [tapPulse, setTapPulse] = useState(0);
   const [activeWeekdayId, setActiveWeekdayId] =
     useState<WeekdayId>(currentWeekdayId);
   const [walkStep, setWalkStep] = useState(0);
 
-  const { isDayCardTapEnabled } = useWalkThroughWeekLearningInstruction({
-    realTodayWeekdayId: currentWeekdayId,
-    activeWeekdayId,
-    walkStep,
-  });
+  const { isDayCardTapEnabled, isTapForwardSignVisible } =
+    useWalkThroughWeekLearningInstruction({
+      realTodayWeekdayId: currentWeekdayId,
+      activeWeekdayId,
+      walkStep,
+    });
 
   const realTodayDay = getWeekdayEventDefaults(currentWeekdayId);
   const activeDay = getWeekdayEventDefaults(activeWeekdayId);
@@ -128,13 +128,12 @@ function WalkThroughWeekLearningView({
     onMondaySchoolSceneVisibleChange?.(showMondaySchoolScene);
   }, [onMondaySchoolSceneVisibleChange, showMondaySchoolScene]);
 
-  const handleDayCardTap = useCallback(() => {
+  const handleWalkForwardTap = useCallback(() => {
     if (!isDayCardTapEnabled) {
       return;
     }
 
     audio.playInteraction();
-    setTapPulse((count) => count + 1);
 
     if (!canAdvanceWalk(walkStep)) {
       return;
@@ -144,14 +143,14 @@ function WalkThroughWeekLearningView({
     setWalkStep((step) => step + 1);
   }, [activeWeekdayId, audio, isDayCardTapEnabled, walkStep]);
 
-  const cardAriaLabel = (() => {
+  const tapForwardSignAriaLabel = (() => {
     if (isTomorrowTeachingStep) {
       return isDayCardTapEnabled
         ? `Tomorrow is ${activeDay.displayName}. Tap to move forward.`
         : `Listen first. Tomorrow is ${activeDay.displayName}.`;
     }
     if (!isDayCardTapEnabled) {
-      return `Listen first. ${activeDay.displayName}. ${activeDay.eventName}.`;
+      return `Listen first. Tap to move forward.`;
     }
     if (isOpeningToday || (cycleComplete && activeWeekdayId === currentWeekdayId)) {
       return `Today is ${activeDay.displayName}. ${activeDay.eventName}. Tap to move forward.`;
@@ -159,54 +158,49 @@ function WalkThroughWeekLearningView({
     return `This is ${activeDay.displayName}. ${activeDay.eventName}. Tap to move forward.`;
   })();
 
-  const bannerInteraction = canTapToAdvance ? "ready" : "locked";
+  const storybookBanner = (
+    <AnimatePresence mode="wait" initial={false}>
+      <motion.div
+        key={`${activeWeekdayId}-${walkStep}-story`}
+        className="w-full max-w-[26rem]"
+        initial={
+          reducedMotion ? false : adventureMotionVariants.fadeIn.initial
+        }
+        animate={adventureMotionVariants.fadeIn.animate}
+        exit={reducedMotion ? undefined : adventureMotionVariants.fadeIn.exit}
+        transition={adventureTransition.normal}
+      >
+        <WalkThroughWeekStorybookDayBanner
+          inWorld={showMondaySchoolScene}
+          interaction="locked"
+          weekdayId={activeWeekdayId}
+        />
+      </motion.div>
+    </AnimatePresence>
+  );
 
-  const dayCardButton = (
-    <motion.button
-      type="button"
-      onClick={handleDayCardTap}
-      whileTap={
-        canTapToAdvance && !reducedMotion
-          ? { scale: adventureTapScale(reducedMotion) }
-          : undefined
+  const tapForwardSign = (
+    <WalkThroughWeekTapToMoveForwardSign
+      visible={isTapForwardSignVisible}
+      tappable={canTapToAdvance}
+      onTap={handleWalkForwardTap}
+      inWorld={showMondaySchoolScene}
+      ariaLabel={tapForwardSignAriaLabel}
+      className={
+        showMondaySchoolScene
+          ? cn(
+              "absolute z-[32]",
+              "bottom-[max(10%,env(safe-area-inset-bottom)+0.5rem)]",
+              "left-[42%] w-[min(42vw,16.5rem)] max-w-[16.5rem]",
+              "sm:bottom-[11%] sm:left-[44%] sm:w-[min(38vw,17.5rem)]",
+              "landscape:bottom-[8%] landscape:left-[46%] landscape:w-[min(34vw,14rem)]"
+            )
+          : cn(
+              "relative mx-auto mt-4",
+              "w-[min(72vw,16.5rem)] max-w-[16.5rem]"
+            )
       }
-      animate={
-        tapPulse > 0 && !reducedMotion && canTapToAdvance
-          ? adventureMotionVariants.successPop.animate
-          : { scale: 1 }
-      }
-      key={tapPulse > 0 ? `tap-${tapPulse}` : "rest"}
-      aria-disabled={!isDayCardTapEnabled}
-      aria-busy={!isDayCardTapEnabled}
-      className={cn(
-        "min-h-[var(--adventure-touch-min)] touch-manipulation text-left",
-        "adventure-wtw-world-banner-tap w-[min(94%,26rem)] max-w-[26rem] p-0",
-        "focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-adventure-orange/35",
-        !isDayCardTapEnabled && "pointer-events-none cursor-default"
-      )}
-      aria-label={cardAriaLabel}
-    >
-      <AnimatePresence mode="wait" initial={false}>
-        <motion.div
-          key={`${activeWeekdayId}-${walkStep}-story`}
-          className="w-full"
-          initial={
-            reducedMotion ? false : adventureMotionVariants.fadeIn.initial
-          }
-          animate={adventureMotionVariants.fadeIn.animate}
-          exit={
-            reducedMotion ? undefined : adventureMotionVariants.fadeIn.exit
-          }
-          transition={adventureTransition.normal}
-        >
-          <WalkThroughWeekStorybookDayBanner
-            inWorld={showMondaySchoolScene}
-            interaction={bannerInteraction}
-            weekdayId={activeWeekdayId}
-          />
-        </motion.div>
-      </AnimatePresence>
-    </motion.button>
+    />
   );
 
   if (showMondaySchoolScene) {
@@ -221,6 +215,15 @@ function WalkThroughWeekLearningView({
         transition={adventureTransition.slow}
       >
         <WalkThroughWeekMondaySchoolScene fillViewport />
+
+        <div
+          className="pointer-events-none absolute inset-0 z-[32]"
+          aria-hidden={!isTapForwardSignVisible}
+        >
+          <div className="pointer-events-auto relative size-full">
+            {tapForwardSign}
+          </div>
+        </div>
 
         <div
           className="pointer-events-none absolute inset-0 z-[35] flex flex-col"
@@ -261,10 +264,8 @@ function WalkThroughWeekLearningView({
             ) : null}
           </div>
 
-          <div
-            className="pointer-events-auto mt-1.5 flex w-full justify-center px-3 sm:mt-2"
-          >
-            {dayCardButton}
+          <div className="pointer-events-none mt-1.5 flex w-full justify-center px-3 sm:mt-2">
+            {storybookBanner}
           </div>
         </div>
       </motion.div>
@@ -301,7 +302,9 @@ function WalkThroughWeekLearningView({
           </div>
         ) : null}
 
-        {dayCardButton}
+        <div className="flex w-full flex-col items-center">{storybookBanner}</div>
+
+        {tapForwardSign}
       </div>
     </motion.div>
   );

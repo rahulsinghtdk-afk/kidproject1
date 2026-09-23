@@ -31,6 +31,8 @@ type UseWalkThroughWeekLearningInstructionOptions = {
 type UseWalkThroughWeekLearningInstructionResult = {
   /** False while step voice is playing; true after "Tap to move forward" finishes. */
   isDayCardTapEnabled: boolean;
+  /** True once "Tap to move forward" voice begins for the current walk step. */
+  isTapForwardSignVisible: boolean;
 };
 
 /**
@@ -48,10 +50,15 @@ export function useWalkThroughWeekLearningInstruction({
   const pendingVoiceTimerRef = useRef<number | null>(null);
   /** Walk step whose voice sequence (through tap-forward) has finished. */
   const [completedVoiceWalkStep, setCompletedVoiceWalkStep] = useState(-1);
+  /** Walk step for which the tap-forward instruction voice has started. */
+  const [tapForwardSignWalkStep, setTapForwardSignWalkStep] = useState(-1);
 
   const isDayCardTapEnabled =
     walkStep >= WALK_CYCLE_TAP_COUNT ||
     completedVoiceWalkStep === walkStep;
+
+  const isTapForwardSignVisible =
+    walkStep < WALK_CYCLE_TAP_COUNT && tapForwardSignWalkStep === walkStep;
 
   const clearPendingVoiceTimer = useCallback(() => {
     if (pendingVoiceTimerRef.current !== null) {
@@ -91,6 +98,7 @@ export function useWalkThroughWeekLearningInstruction({
       pendingVoiceTimerRef.current = window.setTimeout(() => {
         pendingVoiceTimerRef.current = null;
         audio.playInstruction(tapInstruction, {
+          onStart: () => setTapForwardSignWalkStep(step),
           onEnd: () => markVoiceGuidanceCompleteForStep(step),
         });
       }, WTW_TAP_FORWARD_VOICE_DELAY_MS);
@@ -218,5 +226,5 @@ export function useWalkThroughWeekLearningInstruction({
     };
   }, [clearPendingVoiceTimer]);
 
-  return { isDayCardTapEnabled };
+  return { isDayCardTapEnabled, isTapForwardSignVisible };
 }

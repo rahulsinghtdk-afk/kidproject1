@@ -197,6 +197,88 @@
   .adventure-wtw-storybook-banner--ready {
     animation: adventure-wtw-banner-breathe 2.8s ease-in-out infinite;
   }
+
+  /**
+   * Walk Through the Week — “Tap to move forward” road sign (transparent PNG).
+   */
+  .adventure-wtw-tap-forward-sign {
+    position: relative;
+    isolation: isolate;
+    display: block;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    transform-origin: center bottom;
+    min-width: var(--adventure-touch-min);
+    min-height: var(--adventure-touch-min);
+    /* Tune road-sign readiness glow in one place (waiting = voice; ready = tappable). */
+    --adventure-wtw-tap-forward-glow-ring: 3px;
+    --adventure-wtw-tap-forward-glow-waiting-spread: 18px;
+    --adventure-wtw-tap-forward-glow-waiting-strength: 28%;
+    --adventure-wtw-tap-forward-glow-ready-ring-strength: 48%;
+    --adventure-wtw-tap-forward-glow-ready-spread: 26px;
+    --adventure-wtw-tap-forward-glow-ready-strength: 40%;
+  }
+
+  .adventure-wtw-tap-forward-sign:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--adventure-orange) 35%, transparent);
+    border-radius: var(--adventure-radius-lg);
+  }
+
+  .adventure-wtw-tap-forward-sign-artwork {
+    display: block;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  .adventure-wtw-tap-forward-sign--waiting,
+  .adventure-wtw-tap-forward-sign--ready {
+    animation: adventure-wtw-tap-forward-breathe 2s ease-in-out infinite;
+  }
+
+  .adventure-wtw-tap-forward-sign--waiting::before {
+    content: "";
+    position: absolute;
+    inset: -5%;
+    z-index: -1;
+    border-radius: 38% 42% 36% 40%;
+    pointer-events: none;
+    animation: adventure-wtw-tap-forward-glow-waiting 2.2s ease-in-out infinite;
+    box-shadow: 0 0 var(--adventure-wtw-tap-forward-glow-waiting-spread)
+      color-mix(
+        in srgb,
+        var(--adventure-celebration-gold) var(--adventure-wtw-tap-forward-glow-waiting-strength),
+        transparent
+      );
+  }
+
+  .adventure-wtw-tap-forward-sign--ready::before {
+    content: "";
+    position: absolute;
+    inset: -6%;
+    z-index: -1;
+    border-radius: 38% 42% 36% 40%;
+    pointer-events: none;
+    animation: adventure-wtw-tap-forward-glow-ready 2s ease-in-out infinite;
+    box-shadow:
+      0 0 0 var(--adventure-wtw-tap-forward-glow-ring)
+        color-mix(
+          in srgb,
+          var(--adventure-celebration-gold) var(--adventure-wtw-tap-forward-glow-ready-ring-strength),
+          transparent
+        ),
+      0 0 var(--adventure-wtw-tap-forward-glow-ready-spread)
+        color-mix(
+          in srgb,
+          var(--adventure-celebration-gold) var(--adventure-wtw-tap-forward-glow-ready-strength),
+          transparent
+        );
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -206,6 +288,17 @@
 
   .adventure-wtw-storybook-banner--ready {
     animation: none !important;
+  }
+
+  .adventure-wtw-tap-forward-sign--waiting,
+  .adventure-wtw-tap-forward-sign--ready {
+    animation: none !important;
+  }
+
+  .adventure-wtw-tap-forward-sign--waiting::before,
+  .adventure-wtw-tap-forward-sign--ready::before {
+    animation: none !important;
+    opacity: 1;
   }
 }
 
@@ -227,6 +320,36 @@
     }
     50% {
       transform: scale(1.03);
+    }
+  }
+
+  @keyframes adventure-wtw-tap-forward-breathe {
+    0%,
+    100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.03);
+    }
+  }
+
+  @keyframes adventure-wtw-tap-forward-glow-waiting {
+    0%,
+    100% {
+      opacity: 0.72;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+
+  @keyframes adventure-wtw-tap-forward-glow-ready {
+    0%,
+    100% {
+      opacity: 0.85;
+    }
+    50% {
+      opacity: 1;
     }
   }
 

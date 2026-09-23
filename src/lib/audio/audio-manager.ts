@@ -19,6 +19,7 @@ type HowlerWithRegistry = import("howler").HowlerGlobal & {
 };
 
 type VoicePlaybackOptions = {
+  onStart?: () => void;
   onEnd?: () => void;
 };
 
@@ -230,7 +231,11 @@ class AudioManager {
   ): void {
     this.unlockFromUserGesture();
     this.lastInstruction = ref;
-    this.playVoiceClip(ref.src, { restart: true, onEnd: options?.onEnd });
+    this.playVoiceClip(ref.src, {
+      restart: true,
+      onStart: options?.onStart,
+      onEnd: options?.onEnd,
+    });
   }
 
   replayInstruction(): void {
@@ -631,6 +636,7 @@ class AudioManager {
           this.restoreMusicAfterVoice();
         });
 
+        options?.onStart?.();
         howl.play();
       };
 
