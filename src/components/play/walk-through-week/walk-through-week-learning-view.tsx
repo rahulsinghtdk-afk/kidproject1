@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { WalkThroughWeekFridayChaiShopScene } from "./walk-through-week-friday-chai-shop-scene";
 import { WalkThroughWeekMondaySchoolScene } from "./walk-through-week-monday-school-scene";
 import { WalkThroughWeekSaturdayTempleScene } from "./walk-through-week-saturday-temple-scene";
+import { WalkThroughWeekSundayParkScene } from "./walk-through-week-sunday-park-scene";
 import { isWalkThroughWeekStorybookBannerOverlayEnabled } from "./walk-through-week-finished-banner-artwork";
 import { WalkThroughWeekStorybookDayBanner } from "./walk-through-week-storybook-day-banner";
 import { WalkThroughWeekTapToMoveForwardSign } from "./walk-through-week-tap-to-move-forward-sign";
@@ -127,6 +128,7 @@ function WalkThroughWeekLearningView({
   const isSchoolIllustratedWorld = activeDay.eventId === "school";
   const isChaiShopIllustratedWorld = activeDay.eventId === "chaiShop";
   const isTempleIllustratedWorld = activeDay.eventId === "temple";
+  const isParkIllustratedWorld = activeDay.eventId === "park";
   const isTomorrowTeachingStep = walkStep === 1;
   const cycleComplete = isWalkCycleComplete(walkStep);
   const isOpeningToday =
@@ -204,9 +206,9 @@ function WalkThroughWeekLearningView({
           ? cn(
               "absolute z-[32]",
               "bottom-[max(10%,env(safe-area-inset-bottom)+0.5rem)]",
-              "left-[42%] w-[min(42vw,16.5rem)] max-w-[16.5rem]",
-              "sm:bottom-[11%] sm:left-[44%] sm:w-[min(38vw,17.5rem)]",
-              "landscape:bottom-[8%] landscape:left-[46%] landscape:w-[min(34vw,14rem)]"
+              "left-[54%] w-[min(40vw,16rem)] max-w-[16rem]",
+              "sm:bottom-[11%] sm:left-[58%] sm:w-[min(36vw,17rem)]",
+              "landscape:bottom-[8%] landscape:left-[56%] landscape:w-[min(32vw,14rem)]"
             )
           : isChaiShopIllustratedWorld || isTempleIllustratedWorld
             ? cn(
@@ -216,6 +218,14 @@ function WalkThroughWeekLearningView({
                 "sm:bottom-[15%] sm:left-[40%] sm:w-[min(46vw,21rem)]",
                 "landscape:bottom-[12%] landscape:left-[42%] landscape:w-[min(40vw,17rem)]"
               )
+            : isParkIllustratedWorld
+              ? cn(
+                  "absolute z-[32]",
+                  "bottom-[max(7%,env(safe-area-inset-bottom)+0.35rem)]",
+                  "left-[55%] w-[min(44vw,18rem)] max-w-[18rem]",
+                  "sm:bottom-[8%] sm:left-[59%] sm:w-[min(40vw,19rem)]",
+                  "landscape:bottom-[6%] landscape:left-[57%] landscape:w-[min(36vw,16rem)]"
+                )
             : cn(
                 "relative mx-auto mt-4",
                 "w-[min(72vw,16.5rem)] max-w-[16.5rem]"
@@ -239,8 +249,10 @@ function WalkThroughWeekLearningView({
           <WalkThroughWeekMondaySchoolScene fillViewport />
         ) : isChaiShopIllustratedWorld ? (
           <WalkThroughWeekFridayChaiShopScene fillViewport />
-        ) : (
+        ) : isTempleIllustratedWorld ? (
           <WalkThroughWeekSaturdayTempleScene fillViewport />
+        ) : (
+          <WalkThroughWeekSundayParkScene fillViewport />
         )}
 
         <div

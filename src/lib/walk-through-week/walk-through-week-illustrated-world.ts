@@ -5,6 +5,7 @@ const WALK_THROUGH_WEEK_ILLUSTRATED_WORLD_EVENT_IDS: WeekEventId[] = [
   "school",
   "chaiShop",
   "temple",
+  "park",
 ];
 
 function isWalkThroughWeekIllustratedWorldEvent(

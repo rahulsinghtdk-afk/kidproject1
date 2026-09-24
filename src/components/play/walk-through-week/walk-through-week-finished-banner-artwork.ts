@@ -20,7 +20,7 @@ const WALK_THROUGH_WEEK_FINISHED_BANNER_FILENAME: Record<WeekdayId, string> = {
   thursday: "thursday-school.png",
   friday: "friday-chaishop.png",
   saturday: "saturday-temple.png",
-  sunday: "sunday-park.png",
+  sunday: "sunday-banner.png",
 };
 
 function getWalkThroughWeekFinishedBannerSrc(weekdayId: WeekdayId): string {

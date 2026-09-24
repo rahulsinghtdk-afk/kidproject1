@@ -1,7 +1,11 @@
 import type { WeekEventId } from "@/data/walk-through-week/default-week-events";
 
 /** Contextual “Tap to move forward” artwork per illustrated-world event (when available). */
-type WalkThroughWeekTapForwardArtwork = "roadSign" | "chaiCup" | "temple";
+type WalkThroughWeekTapForwardArtwork =
+  | "roadSign"
+  | "chaiCup"
+  | "temple"
+  | "park";
 
 function walkThroughWeekTapForwardArtworkForEvent(
   eventId: WeekEventId
@@ -11,6 +15,8 @@ function walkThroughWeekTapForwardArtworkForEvent(
       return "chaiCup";
     case "temple":
       return "temple";
+    case "park":
+      return "park";
     case "school":
       return "roadSign";
     default:

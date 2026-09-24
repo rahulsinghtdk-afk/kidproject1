@@ -22,6 +22,11 @@ import {
   WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_SRC,
   WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_WIDTH,
 } from "./walk-through-week-tap-to-move-forward-temple-artwork";
+import {
+  WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_PARK_ARTWORK_HEIGHT,
+  WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_PARK_ARTWORK_SRC,
+  WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_PARK_ARTWORK_WIDTH,
+} from "./walk-through-week-tap-to-move-forward-park-artwork";
 import type { WalkThroughWeekTapForwardArtwork } from "@/lib/walk-through-week/walk-through-week-tap-forward-artwork";
 
 type WalkThroughWeekTapToMoveForwardSignProps = {
@@ -54,23 +59,30 @@ function WalkThroughWeekTapToMoveForwardSign({
   const reducedMotion = useReducedMotion() ?? false;
   const isChaiCup = artwork === "chaiCup";
   const isTemple = artwork === "temple";
+  const isPark = artwork === "park";
   const isContextualIllustratedTap =
-    isChaiCup || isTemple;
+    isChaiCup || isTemple || isPark;
   const defaultArtworkWidth = isChaiCup
     ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_WIDTH
     : isTemple
       ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_WIDTH
-      : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_WIDTH;
+      : isPark
+        ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_PARK_ARTWORK_WIDTH
+        : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_WIDTH;
   const defaultArtworkHeight = isChaiCup
     ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_HEIGHT
     : isTemple
       ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_HEIGHT
-      : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_HEIGHT;
+      : isPark
+        ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_PARK_ARTWORK_HEIGHT
+        : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_HEIGHT;
   const artworkSrc = isChaiCup
     ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_SRC
     : isTemple
       ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_SRC
-      : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_SRC;
+      : isPark
+        ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_PARK_ARTWORK_SRC
+        : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_SRC;
 
   const [artworkWidth, setArtworkWidth] = useState(defaultArtworkWidth);
   const [artworkHeight, setArtworkHeight] = useState(defaultArtworkHeight);
@@ -122,6 +134,7 @@ function WalkThroughWeekTapToMoveForwardSign({
         inWorld && "adventure-wtw-tap-forward-sign--in-world",
         isChaiCup && "adventure-wtw-tap-forward-sign--chai",
         isTemple && "adventure-wtw-tap-forward-sign--temple",
+        isPark && "adventure-wtw-tap-forward-sign--park",
         tappable
           ? "adventure-wtw-tap-forward-sign--ready"
           : "adventure-wtw-tap-forward-sign--waiting",

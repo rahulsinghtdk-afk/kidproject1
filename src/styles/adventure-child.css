@@ -296,6 +296,13 @@
     content: none;
     display: none;
   }
+
+  /** Park — tap artwork includes its own emphasis. */
+  .adventure-wtw-tap-forward-sign--park.adventure-wtw-tap-forward-sign--waiting::before,
+  .adventure-wtw-tap-forward-sign--park.adventure-wtw-tap-forward-sign--ready::before {
+    content: none;
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
