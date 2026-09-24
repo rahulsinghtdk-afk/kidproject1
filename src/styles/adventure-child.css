@@ -289,6 +289,13 @@
     --adventure-wtw-tap-forward-glow-ready-strength: 30%;
     --adventure-wtw-tap-forward-glow-ready-ring-strength: 36%;
   }
+
+  /** Temple — no gold ring/glow; tap artwork includes its own emphasis. */
+  .adventure-wtw-tap-forward-sign--temple.adventure-wtw-tap-forward-sign--waiting::before,
+  .adventure-wtw-tap-forward-sign--temple.adventure-wtw-tap-forward-sign--ready::before {
+    content: none;
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

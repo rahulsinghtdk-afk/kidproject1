@@ -18,7 +18,7 @@ export type WeekdayId = (typeof WEEKDAY_IDS)[number];
 export const WEEK_EVENT_IDS = [
   "school",
   "chaiShop",
-  "cake",
+  "temple",
   "park",
 ] as const;
 
@@ -75,9 +75,9 @@ export const DEFAULT_WEEK_EVENTS: Record<WeekdayId, WeekdayEventDefaults> = {
   },
   saturday: {
     displayName: "Saturday",
-    eventName: "Cake",
-    eventEmoji: "🍰",
-    eventId: "cake",
+    eventName: "Temple",
+    eventEmoji: "🛕",
+    eventId: "temple",
   },
   sunday: {
     displayName: "Sunday",

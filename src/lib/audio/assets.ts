@@ -79,7 +79,7 @@ export const AUDIO_ASSET_PATHS = {
     /** Walk Through the Week — "Today we …" event lines (independent of weekday). */
     walkThroughWeekEventSchool: "/audio/voice/wtw-event-school.mp3",
     walkThroughWeekEventChaiShop: "/audio/voice/wtw-event-chai-shop.mp3",
-    walkThroughWeekEventCake: "/audio/voice/wtw-event-cake.mp3",
+    walkThroughWeekEventTemple: "/audio/voice/wtw-event-temple.mp3",
     walkThroughWeekEventPark: "/audio/voice/wtw-event-park.mp3",
     /** Walk Through the Week — "This is [day]." (one clip per weekday). */
     walkThroughWeekThisIsSunday: "/audio/voice/wtw-this-is-sunday.mp3",

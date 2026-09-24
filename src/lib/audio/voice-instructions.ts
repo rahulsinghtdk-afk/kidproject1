@@ -94,7 +94,7 @@ export function walkThroughWeekTodayInstruction(
 const WALK_THROUGH_WEEK_EVENT_VOICE: Record<WeekEventId, string> = {
   school: AUDIO_ASSET_PATHS.voice.walkThroughWeekEventSchool,
   chaiShop: AUDIO_ASSET_PATHS.voice.walkThroughWeekEventChaiShop,
-  cake: AUDIO_ASSET_PATHS.voice.walkThroughWeekEventCake,
+  temple: AUDIO_ASSET_PATHS.voice.walkThroughWeekEventTemple,
   park: AUDIO_ASSET_PATHS.voice.walkThroughWeekEventPark,
 };
 

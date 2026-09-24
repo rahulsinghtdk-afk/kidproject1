@@ -16,6 +16,7 @@ import {
   isWalkCycleComplete,
 } from "@/lib/walk-through-week/week-walk-navigation";
 import { isWalkThroughWeekIllustratedWorldEvent } from "@/lib/walk-through-week/walk-through-week-illustrated-world";
+import { walkThroughWeekTapForwardArtworkForEvent } from "@/lib/walk-through-week/walk-through-week-tap-forward-artwork";
 import {
   adventureMotionVariants,
   adventureTransition,
@@ -24,6 +25,8 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { cn } from "@/lib/utils";
 import { WalkThroughWeekFridayChaiShopScene } from "./walk-through-week-friday-chai-shop-scene";
 import { WalkThroughWeekMondaySchoolScene } from "./walk-through-week-monday-school-scene";
+import { WalkThroughWeekSaturdayTempleScene } from "./walk-through-week-saturday-temple-scene";
+import { isWalkThroughWeekStorybookBannerOverlayEnabled } from "./walk-through-week-finished-banner-artwork";
 import { WalkThroughWeekStorybookDayBanner } from "./walk-through-week-storybook-day-banner";
 import { WalkThroughWeekTapToMoveForwardSign } from "./walk-through-week-tap-to-move-forward-sign";
 
@@ -123,6 +126,7 @@ function WalkThroughWeekLearningView({
   );
   const isSchoolIllustratedWorld = activeDay.eventId === "school";
   const isChaiShopIllustratedWorld = activeDay.eventId === "chaiShop";
+  const isTempleIllustratedWorld = activeDay.eventId === "temple";
   const isTomorrowTeachingStep = walkStep === 1;
   const cycleComplete = isWalkCycleComplete(walkStep);
   const isOpeningToday =
@@ -163,7 +167,10 @@ function WalkThroughWeekLearningView({
     return `This is ${activeDay.displayName}. ${activeDay.eventName}. Tap to move forward.`;
   })();
 
-  const storybookBanner = (
+  const showStorybookBannerOverlay =
+    isWalkThroughWeekStorybookBannerOverlayEnabled(activeWeekdayId);
+
+  const storybookBanner = showStorybookBannerOverlay ? (
     <AnimatePresence mode="wait" initial={false}>
       <motion.div
         key={`${activeWeekdayId}-${walkStep}-story`}
@@ -182,7 +189,7 @@ function WalkThroughWeekLearningView({
         />
       </motion.div>
     </AnimatePresence>
-  );
+  ) : null;
 
   const tapForwardSign = (
     <WalkThroughWeekTapToMoveForwardSign
@@ -190,7 +197,7 @@ function WalkThroughWeekLearningView({
       tappable={canTapToAdvance}
       onTap={handleWalkForwardTap}
       inWorld={showIllustratedWorld}
-      artwork={isChaiShopIllustratedWorld ? "chaiCup" : "roadSign"}
+      artwork={walkThroughWeekTapForwardArtworkForEvent(activeDay.eventId)}
       ariaLabel={tapForwardSignAriaLabel}
       className={
         isSchoolIllustratedWorld
@@ -201,7 +208,7 @@ function WalkThroughWeekLearningView({
               "sm:bottom-[11%] sm:left-[44%] sm:w-[min(38vw,17.5rem)]",
               "landscape:bottom-[8%] landscape:left-[46%] landscape:w-[min(34vw,14rem)]"
             )
-          : isChaiShopIllustratedWorld
+          : isChaiShopIllustratedWorld || isTempleIllustratedWorld
             ? cn(
                 "absolute z-[32]",
                 "bottom-[max(14%,env(safe-area-inset-bottom)+0.65rem)]",
@@ -230,8 +237,10 @@ function WalkThroughWeekLearningView({
       >
         {isSchoolIllustratedWorld ? (
           <WalkThroughWeekMondaySchoolScene fillViewport />
-        ) : (
+        ) : isChaiShopIllustratedWorld ? (
           <WalkThroughWeekFridayChaiShopScene fillViewport />
+        ) : (
+          <WalkThroughWeekSaturdayTempleScene fillViewport />
         )}
 
         <div
@@ -282,9 +291,11 @@ function WalkThroughWeekLearningView({
             ) : null}
           </div>
 
-          <div className="pointer-events-none mt-1.5 flex w-full justify-center px-3 sm:mt-2">
-            {storybookBanner}
-          </div>
+          {showStorybookBannerOverlay ? (
+            <div className="pointer-events-none mt-1.5 flex w-full justify-center px-3 sm:mt-2">
+              {storybookBanner}
+            </div>
+          ) : null}
         </div>
       </motion.div>
     );
@@ -320,7 +331,9 @@ function WalkThroughWeekLearningView({
           </div>
         ) : null}
 
-        <div className="flex w-full flex-col items-center">{storybookBanner}</div>
+        {showStorybookBannerOverlay ? (
+          <div className="flex w-full flex-col items-center">{storybookBanner}</div>
+        ) : null}
 
         {tapForwardSign}
       </div>

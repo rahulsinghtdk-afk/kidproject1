@@ -17,8 +17,12 @@ import {
   WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_SRC,
   WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_WIDTH,
 } from "./walk-through-week-tap-to-move-forward-chai-artwork";
-
-type WalkThroughWeekTapForwardArtwork = "roadSign" | "chaiCup";
+import {
+  WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_HEIGHT,
+  WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_SRC,
+  WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_WIDTH,
+} from "./walk-through-week-tap-to-move-forward-temple-artwork";
+import type { WalkThroughWeekTapForwardArtwork } from "@/lib/walk-through-week/walk-through-week-tap-forward-artwork";
 
 type WalkThroughWeekTapToMoveForwardSignProps = {
   /** Sign is on screen (tap-forward instruction has started for this step). */
@@ -28,7 +32,7 @@ type WalkThroughWeekTapToMoveForwardSignProps = {
   onTap: () => void;
   /** Composited over full-bleed illustrated world (school days). */
   inWorld?: boolean;
-  /** School days use the road sign; Friday Chai Shop uses the chai-cup artwork. */
+  /** Resolved from event/day — school road sign, chai cup, temple sign, etc. */
   artwork?: WalkThroughWeekTapForwardArtwork;
   className?: string;
   ariaLabel: string;
@@ -49,15 +53,24 @@ function WalkThroughWeekTapToMoveForwardSign({
 }: WalkThroughWeekTapToMoveForwardSignProps) {
   const reducedMotion = useReducedMotion() ?? false;
   const isChaiCup = artwork === "chaiCup";
+  const isTemple = artwork === "temple";
+  const isContextualIllustratedTap =
+    isChaiCup || isTemple;
   const defaultArtworkWidth = isChaiCup
     ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_WIDTH
-    : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_WIDTH;
+    : isTemple
+      ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_WIDTH
+      : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_WIDTH;
   const defaultArtworkHeight = isChaiCup
     ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_HEIGHT
-    : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_HEIGHT;
+    : isTemple
+      ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_HEIGHT
+      : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_HEIGHT;
   const artworkSrc = isChaiCup
     ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_CHAI_ARTWORK_SRC
-    : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_SRC;
+    : isTemple
+      ? WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_TEMPLE_ARTWORK_SRC
+      : WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_SRC;
 
   const [artworkWidth, setArtworkWidth] = useState(defaultArtworkWidth);
   const [artworkHeight, setArtworkHeight] = useState(defaultArtworkHeight);
@@ -90,18 +103,25 @@ function WalkThroughWeekTapToMoveForwardSign({
           : undefined
       }
       initial={
-        isChaiCup && !reducedMotion ? { opacity: 0, scale: 0.96 } : false
+        isContextualIllustratedTap && !reducedMotion
+          ? { opacity: 0, scale: 0.96 }
+          : false
       }
       animate={
-        isChaiCup && !reducedMotion ? { opacity: 1, scale: 1 } : undefined
+        isContextualIllustratedTap && !reducedMotion
+          ? { opacity: 1, scale: 1 }
+          : undefined
       }
       transition={
-        isChaiCup && !reducedMotion ? adventureTransition.normal : undefined
+        isContextualIllustratedTap && !reducedMotion
+          ? adventureTransition.normal
+          : undefined
       }
       className={cn(
         "adventure-wtw-tap-forward-sign touch-manipulation",
         inWorld && "adventure-wtw-tap-forward-sign--in-world",
         isChaiCup && "adventure-wtw-tap-forward-sign--chai",
+        isTemple && "adventure-wtw-tap-forward-sign--temple",
         tappable
           ? "adventure-wtw-tap-forward-sign--ready"
           : "adventure-wtw-tap-forward-sign--waiting",
@@ -129,4 +149,3 @@ function WalkThroughWeekTapToMoveForwardSign({
 }
 
 export { WalkThroughWeekTapToMoveForwardSign };
-export type { WalkThroughWeekTapForwardArtwork };

@@ -4,6 +4,7 @@ import type { WeekEventId } from "@/data/walk-through-week/default-week-events";
 const WALK_THROUGH_WEEK_ILLUSTRATED_WORLD_EVENT_IDS: WeekEventId[] = [
   "school",
   "chaiShop",
+  "temple",
 ];
 
 function isWalkThroughWeekIllustratedWorldEvent(

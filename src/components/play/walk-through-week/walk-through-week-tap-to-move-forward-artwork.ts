@@ -1,4 +1,4 @@
-/** Finished transparent “Tap to move forward” road-sign artwork (Walk Through the Week). */
+/** School-day transparent “Tap to move forward” road-sign artwork (Walk Through the Week). */
 const WALK_THROUGH_WEEK_TAP_TO_MOVE_FORWARD_ARTWORK_SRC =
   "/environments/walk-through-week/tap-to-move-forward.png";
 
