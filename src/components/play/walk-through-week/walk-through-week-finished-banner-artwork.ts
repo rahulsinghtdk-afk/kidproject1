@@ -19,22 +19,12 @@ const WALK_THROUGH_WEEK_FINISHED_BANNER_FILENAME: Record<WeekdayId, string> = {
   wednesday: "wednesday-school.png",
   thursday: "thursday-school.png",
   friday: "friday-chaishop.png",
-  saturday: "saturday-temple.png",
+  saturday: "saturday-temple-banner.png",
   sunday: "sunday-banner.png",
 };
 
 function getWalkThroughWeekFinishedBannerSrc(weekdayId: WeekdayId): string {
   return `${WALK_THROUGH_WEEK_FINISHED_BANNER_DIR}/${WALK_THROUGH_WEEK_FINISHED_BANNER_FILENAME[weekdayId]}`;
-}
-
-/**
- * Saturday → Temple environment art includes the day/event header.
- * No separate storybook banner overlay (and no `banners/saturday-temple.png`).
- */
-function isWalkThroughWeekStorybookBannerOverlayEnabled(
-  weekdayId: WeekdayId
-): boolean {
-  return weekdayId !== "saturday";
 }
 
 /** Temporary frame-only fallback until all seven finished assets ship. */
@@ -54,5 +44,4 @@ export {
   WALK_THROUGH_WEEK_FINISHED_BANNER_DIR,
   WALK_THROUGH_WEEK_FINISHED_BANNER_FILENAME,
   getWalkThroughWeekFinishedBannerSrc,
-  isWalkThroughWeekStorybookBannerOverlayEnabled,
 };

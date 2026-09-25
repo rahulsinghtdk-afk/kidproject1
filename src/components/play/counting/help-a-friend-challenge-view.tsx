@@ -16,7 +16,7 @@ import { getPoolObjectLayout } from "@/lib/counting/pool-object-layouts";
 import { helpAFriendRequestInstruction } from "@/lib/audio";
 import { useAudio } from "@/hooks/use-audio";
 import { useChallengeCelebrationProgression } from "@/hooks/use-challenge-celebration-progression";
-import { useChallengeInstruction } from "@/hooks/use-challenge-instruction";
+import { useHelpAFriendChallengeInstruction } from "@/hooks/use-help-a-friend-challenge-instruction";
 import { ChallengeGoodJobMessage } from "@/components/play/challenge-good-job-message";
 import { ChallengeNextGuidance } from "@/components/play/challenge-next-guidance";
 import {
@@ -34,6 +34,8 @@ import { GiftQuantityCounter } from "./gift-quantity-counter";
 import { PlayProgressIndicator } from "./play-progress-indicator";
 import { PressToConfirmPad } from "./press-to-confirm-pad";
 import { HearAgainButton } from "./hear-again-button";
+import { HelpAFriendListenFirstCue } from "./help-a-friend-listen-first-cue";
+import { cn } from "@/lib/utils";
 
 type HelpAFriendChallengeViewProps = {
   challenge: HelpAFriendChallenge;
@@ -110,13 +112,17 @@ function HelpAFriendChallengeView({
     setInstructionVisualKey((key) => key + 1);
   }, []);
 
-  const { registerInteraction, hearAgain } = useChallengeInstruction(
-    requestInstruction,
-    {
-      active: challengeInstructionsActive && requestInstruction !== null,
-      onHearAgain: bumpInstructionVisual,
-    }
-  );
+  const {
+    hearAgain,
+    registerTaskInteraction,
+    instructionPlaying,
+    instructionGateLocked,
+  } = useHelpAFriendChallengeInstruction(requestInstruction, {
+    active: challengeInstructionsActive && requestInstruction !== null,
+    onHearAgain: bumpInstructionVisual,
+  });
+
+  const taskInteractionLocked = playLocked || instructionGateLocked;
 
   useEffect(() => {
     thatsEnoughSpokenRef.current = false;
@@ -127,9 +133,7 @@ function HelpAFriendChallengeView({
   }, [beginSuccessCelebration]);
 
   const handlePressConfirm = useCallback(() => {
-    if (playLocked) return;
-
-    registerInteraction();
+    if (taskInteractionLocked) return;
 
     if (givenCount === challenge.requested) {
       finishChallenge();
@@ -139,22 +143,21 @@ function HelpAFriendChallengeView({
     setPressNudge(true);
     window.setTimeout(() => setPressNudge(false), 500);
   }, [
-    playLocked,
+    taskInteractionLocked,
     challenge.requested,
     finishChallenge,
     givenCount,
-    registerInteraction,
   ]);
 
   const handleDeliver = useCallback(
     (index: number): boolean => {
-      if (playLocked) return false;
+      if (taskInteractionLocked) return false;
 
       if (givenIds.includes(index) || givenCount >= challenge.requested) {
         return false;
       }
 
-      registerInteraction();
+      registerTaskInteraction();
       const nextCount = givenCount + 1;
       if (nextCount >= challenge.requested) {
         audio.playFinalInteraction();
@@ -170,11 +173,11 @@ function HelpAFriendChallengeView({
     },
     [
       audio,
-      playLocked,
+      taskInteractionLocked,
       challenge.requested,
       givenCount,
       givenIds,
-      registerInteraction,
+      registerTaskInteraction,
     ]
   );
 
@@ -218,24 +221,37 @@ function HelpAFriendChallengeView({
               requestAriaLabel={requestAriaLabel}
               collectedEmojis={collectedEmojis}
               instructionVisualKey={instructionVisualKey}
+              listening={instructionPlaying}
               className="w-full"
             />
+            <HelpAFriendListenFirstCue visible={instructionPlaying} />
             {requestInstruction ? (
               <HearAgainButton onPress={hearAgain} />
             ) : null}
           </div>
         ) : null}
 
-        <div className="flex flex-1 flex-col gap-4">
+        <div
+          className={cn(
+            "relative flex flex-1 flex-col gap-4",
+            taskInteractionLocked &&
+              "pointer-events-none [&_*]:pointer-events-none"
+          )}
+        >
           {!playLocked ? (
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
+            <div
+              className={cn(
+                "flex flex-wrap items-center justify-center gap-6 sm:gap-10",
+                taskInteractionLocked && "opacity-55"
+              )}
+            >
               <GiftQuantityCounter
                 given={givenCount}
                 requested={challenge.requested}
                 emphasize={counterEmphasis}
               />
               <PressToConfirmPad
-                disabled={playLocked}
+                disabled={taskInteractionLocked}
                 nudge={pressNudge}
                 onPress={handlePressConfirm}
               />
@@ -243,7 +259,10 @@ function HelpAFriendChallengeView({
           ) : null}
 
           <motion.div
-            className="relative w-full flex-1"
+            className={cn(
+              "relative w-full flex-1",
+              taskInteractionLocked && "opacity-55"
+            )}
             variants={
               showCelebrationScene ? adventureMotionVariants.successPop : undefined
             }

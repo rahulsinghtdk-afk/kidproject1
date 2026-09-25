@@ -15,6 +15,8 @@ type CharacterGiftZoneProps = {
   collectedEmojis: string[];
   /** Bumps when Hear Again replays the request (re-animate speech bubble). */
   instructionVisualKey?: number;
+  /** Request voice is playing — subtle emphasis on the speech bubble. */
+  listening?: boolean;
   className?: string;
 };
 
@@ -27,6 +29,7 @@ const CharacterGiftZone = forwardRef<HTMLDivElement, CharacterGiftZoneProps>(
       requestAriaLabel,
       collectedEmojis,
       instructionVisualKey = 0,
+      listening = false,
       className,
     },
     ref
@@ -46,7 +49,9 @@ const CharacterGiftZone = forwardRef<HTMLDivElement, CharacterGiftZoneProps>(
             "relative max-w-[min(100%,20rem)] rounded-[var(--adventure-radius-2xl)]",
             "border-[3px] border-adventure-border-strong bg-adventure-surface/95",
             "px-5 py-3 text-center shadow-[var(--adventure-shadow-md)]",
-            "font-[family-name:var(--font-adventure)] text-[length:var(--adventure-text-xl)] font-semibold text-adventure-text"
+            "font-[family-name:var(--font-adventure)] text-[length:var(--adventure-text-xl)] font-semibold text-adventure-text",
+            listening &&
+              "border-adventure-orange/55 shadow-[0_0_0_3px_color-mix(in_srgb,var(--adventure-orange)_22%,transparent)]"
           )}
           initial={{ opacity: 0, y: reducedMotion ? 0 : 6 }}
           animate={{ opacity: 1, y: 0 }}

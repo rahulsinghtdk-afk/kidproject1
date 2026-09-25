@@ -1,6 +1,9 @@
 import { AUDIO_ASSET_PATHS } from "./assets";
 import type { CountAndChooseChallenge } from "@/data/counting/count-and-choose/challenges";
-import type { HelpAFriendChallenge } from "@/data/counting/help-a-friend/challenges";
+import type {
+  HelpAFriendChallenge,
+  HelpAFriendChallengeId,
+} from "@/data/counting/help-a-friend/challenges";
 import type { CountingObjectKind } from "@/data/counting/object-kinds";
 import type { WeekdayId } from "@/data/walk-through-week/default-week-events";
 import {
@@ -34,19 +37,44 @@ export function countHowManyInstruction(): InstructionAudioRef {
 }
 
 /**
- * One clip per fixed Help a Friend challenge (MVP data).
+ * One clip per Help a Friend challenge id.
  * Filename encodes quantity + object, e.g. give-me-2-apples.mp3
  */
-const HELP_A_FRIEND_VOICE_BY_CHALLENGE_ID: Record<string, string> = {
+const HELP_A_FRIEND_VOICE_BY_CHALLENGE_ID: Record<
+  HelpAFriendChallengeId,
+  string
+> = {
   "apples-give-2": AUDIO_ASSET_PATHS.voice.giveMe2Apples,
-  "stars-give-4": AUDIO_ASSET_PATHS.voice.giveMe4Stars,
-  "balls-give-3": AUDIO_ASSET_PATHS.voice.giveMe3Balls,
+  "stars-give-3": AUDIO_ASSET_PATHS.voice.giveMe3Stars,
+  "balls-give-4": AUDIO_ASSET_PATHS.voice.giveMe4Balls,
+  "apples-give-5": AUDIO_ASSET_PATHS.voice.giveMe5Apples,
+  "stars-give-3-pool-6": AUDIO_ASSET_PATHS.voice.giveMe3Stars,
+  "balls-give-6": AUDIO_ASSET_PATHS.voice.giveMe6Balls,
+  "apples-give-4": AUDIO_ASSET_PATHS.voice.giveMe4Apples,
+  "stars-give-7": AUDIO_ASSET_PATHS.voice.giveMe7Stars,
+  "balls-give-5": AUDIO_ASSET_PATHS.voice.giveMe5Balls,
+  "apples-give-8": AUDIO_ASSET_PATHS.voice.giveMe8Apples,
 };
+
+/** Registered paths whose mp3 files are not yet in public/audio/voice/ */
+export const HELP_A_FRIEND_VOICE_FILES_PENDING_ON_DISK = [
+  AUDIO_ASSET_PATHS.voice.giveMe3Stars,
+  AUDIO_ASSET_PATHS.voice.giveMe4Balls,
+  AUDIO_ASSET_PATHS.voice.giveMe5Apples,
+  AUDIO_ASSET_PATHS.voice.giveMe6Balls,
+  AUDIO_ASSET_PATHS.voice.giveMe4Apples,
+  AUDIO_ASSET_PATHS.voice.giveMe7Stars,
+  AUDIO_ASSET_PATHS.voice.giveMe5Balls,
+  AUDIO_ASSET_PATHS.voice.giveMe8Apples,
+] as const;
 
 export function helpAFriendRequestInstruction(
   challenge: HelpAFriendChallenge
 ): InstructionAudioRef | null {
-  const src = HELP_A_FRIEND_VOICE_BY_CHALLENGE_ID[challenge.id];
+  const src =
+    HELP_A_FRIEND_VOICE_BY_CHALLENGE_ID[
+      challenge.id as HelpAFriendChallengeId
+    ];
   if (!src) {
     return null;
   }

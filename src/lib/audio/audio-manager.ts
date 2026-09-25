@@ -238,12 +238,16 @@ class AudioManager {
     });
   }
 
-  replayInstruction(): void {
+  replayInstruction(options?: VoicePlaybackOptions): void {
     if (!this.lastInstruction) {
       return;
     }
     this.unlockFromUserGesture();
-    this.playVoiceClip(this.lastInstruction.src, { restart: true });
+    this.playVoiceClip(this.lastInstruction.src, {
+      restart: true,
+      onStart: options?.onStart,
+      onEnd: options?.onEnd,
+    });
   }
 
   /** Preload a voice clip so the first instruction plays with minimal delay. */
@@ -581,6 +585,7 @@ class AudioManager {
   ): void {
     void this.canPlayOnChannel("voice").then(async (allowed) => {
       if (!allowed) {
+        options?.onEnd?.();
         return;
       }
       if (this.voicePlaying && !options?.restart) {
@@ -588,6 +593,7 @@ class AudioManager {
       }
       const howl = await this.ensureVoiceHowl(src);
       if (!howl || !this.isChannelAllowed("voice")) {
+        options?.onEnd?.();
         return;
       }
 

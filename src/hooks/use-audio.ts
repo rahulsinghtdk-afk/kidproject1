@@ -45,9 +45,12 @@ export function useAudio() {
     [manager]
   );
 
-  const replayInstruction = useCallback(() => {
-    manager.replayInstruction();
-  }, [manager]);
+  const replayInstruction = useCallback(
+    (options?: { onStart?: () => void; onEnd?: () => void }) => {
+      manager.replayInstruction(options);
+    },
+    [manager]
+  );
 
   const playFinalSuccess = useCallback(
     (childName?: string, options?: { finalAdventure?: boolean }) => {
